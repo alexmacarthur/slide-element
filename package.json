@@ -1,0 +1,13 @@
+{
+  "name": "slide-element",
+  "version": "0.1.0",
+  "description": "A jQuery-like collection of functions to help slide elements open & closed.",
+  "main": "dist/slide-element.min.js",
+  "module": "dist/slide-element.es.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
+  "license": "ISC"
+}
