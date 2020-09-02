@@ -19,7 +19,7 @@ const setInitialCss = (thing, durationInSeconds) => {
     const computedStyle = window.getComputedStyle(thing);
     const animationStyles = {
         overflow: 'hidden', 
-        transitionProperty: 'height', 
+        transitionProperty: 'padding', // add height back in!
         transitionDuration: `${durationInSeconds}s`
     }
 
@@ -32,6 +32,7 @@ const setInitialCss = (thing, durationInSeconds) => {
             continue;
         }
 
+        console.log(animationStyles[k])
         thing.style[k] = animationStyles[k];
     }
 }
@@ -53,18 +54,24 @@ export const slideDown = (thing, durationInSeconds = .25) => {
          */
         onAnimationComplete(thing, () => {
             thing.style.height = '';
+            thing.style.padding = '';
             resolve();
         });
     
         thing.dataset.isSlidOpen = true;
         thing.style.display = '';
-    
-        const height = `${thing.clientHeight}px`;
+
+        const padding = window.getComputedStyle(thing).padding;
+        const height = `${thing.offsetHeight}px`;
     
         thing.style.height = '0px';
+        thing.style.padding = '0px';
     
         // This update must happen on a separate tick in order to trigger an animation.
-        setTimeout(() => thing.style.height = height, 0);
+        setTimeout(() => {
+            thing.style.height = height;
+            thing.style.padding = padding;
+        }, 0);
     })
 }
 
@@ -82,14 +89,18 @@ export const slideUp = (thing, durationInSeconds = .25) => {
         onAnimationComplete(thing, () => {
             delete thing.dataset.isSlidOpen;
             thing.style.height = '';
+            thing.style.padding = '';
             thing.style.display = 'none';
             resolve();            
         })
     
-        thing.style.height = `${thing.clientHeight}px`;
+        thing.style.height = `${thing.offsetHeight}px`;
     
         // This update must happen on a separate tick in order to trigger an animation.
-        setTimeout(() => thing.style.height = '0px', 0);
+        setTimeout(() => {
+            thing.style.height = '0px';
+            thing.style.padding = '0px';
+        }, 0);
     });
 }
 
