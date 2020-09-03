@@ -1,11 +1,48 @@
 /**
+ * Set the height & padding style attributes on an element.
+ * 
+ * @param {Node} element 
+ * @param {array} heightAndPadding 
+ */
+const setStyleAttributes = (element, heightAndPadding) => { 
+    element.style.height = heightAndPadding[0];
+    element.style.padding = heightAndPadding[1];
+}
+
+/**
  * Fire a one-time function when an animation has completed.
  * 
  * @param {function} callback 
  * @returns {void}
  */
-const onAnimationComplete = (thing, callback) => {
-    thing.addEventListener('transitionend', () => callback(), { once: true });
+const onAnimationComplete = (element, property) => {
+    return new Promise(resolve => {
+        const eventListenerCallback = (e) => {
+            if(e.propertyName.includes(property)) {
+                element.removeEventListener('transitionend', eventListenerCallback);
+                element.style[property] = '';
+                resolve();
+            }
+        }
+    
+        element.addEventListener('transitionend', eventListenerCallback);
+        element.addEventListener('transitioncancel', eventListenerCallback);
+    });
+}
+
+/**
+ * Reset explicit values for padding or height attributes 
+ * after respective animations are complete, and then
+ * fire a callback after the animation is effectively "complete."
+ * 
+ * @param {Node} element
+ * @param {Promise} 
+ */
+const resetAfterAnimation = (element) => {
+    const paddingPromise = onAnimationComplete(element, 'padding');
+    const heightPromise = onAnimationComplete(element, 'height');
+
+    return Promise.all([paddingPromise, heightPromise]);
 }
 
 /**
@@ -19,7 +56,7 @@ const setInitialCss = (thing, durationInSeconds) => {
     const computedStyle = window.getComputedStyle(thing);
     const animationStyles = {
         overflow: 'hidden', 
-        transitionProperty: 'padding', // add height back in!
+        transitionProperty: 'padding, height',
         transitionDuration: `${durationInSeconds}s`
     }
 
@@ -32,7 +69,6 @@ const setInitialCss = (thing, durationInSeconds) => {
             continue;
         }
 
-        console.log(animationStyles[k])
         thing.style[k] = animationStyles[k];
     }
 }
@@ -47,31 +83,18 @@ const setInitialCss = (thing, durationInSeconds) => {
 export const slideDown = (thing, durationInSeconds = .25) => {
     return new Promise(resolve => {
         setInitialCss(thing, durationInSeconds);
-    
-        /**
-         * Don't try to be opinionated about the height 
-         * after the transition has taken place.
-         */
-        onAnimationComplete(thing, () => {
-            thing.style.height = '';
-            thing.style.padding = '';
-            resolve();
-        });
+        resetAfterAnimation(thing).then(() => resolve());
     
         thing.dataset.isSlidOpen = true;
         thing.style.display = '';
-
+        
         const padding = window.getComputedStyle(thing).padding;
         const height = `${thing.offsetHeight}px`;
+        
+        setStyleAttributes(thing, ['0px', '0px'])
     
-        thing.style.height = '0px';
-        thing.style.padding = '0px';
-    
-        // This update must happen on a separate tick in order to trigger an animation.
-        setTimeout(() => {
-            thing.style.height = height;
-            thing.style.padding = padding;
-        }, 0);
+        // This update must happen on a separate tick in order to trigger an animation.    
+        requestAnimationFrame(() => setStyleAttributes(thing, [height, padding]));
     })
 }
 
@@ -85,22 +108,17 @@ export const slideDown = (thing, durationInSeconds = .25) => {
 export const slideUp = (thing, durationInSeconds = .25) => {
     return new Promise(resolve => {
         setInitialCss(thing, durationInSeconds);
-    
-        onAnimationComplete(thing, () => {
+
+        resetAfterAnimation(thing).then(() => {
             delete thing.dataset.isSlidOpen;
-            thing.style.height = '';
-            thing.style.padding = '';
             thing.style.display = 'none';
-            resolve();            
-        })
-    
+            resolve();
+        });
+
         thing.style.height = `${thing.offsetHeight}px`;
     
         // This update must happen on a separate tick in order to trigger an animation.
-        setTimeout(() => {
-            thing.style.height = '0px';
-            thing.style.padding = '0px';
-        }, 0);
+        requestAnimationFrame(() => setStyleAttributes(thing, ['0px', '0px']));
     });
 }
 
