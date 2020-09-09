@@ -5,9 +5,13 @@
   "main": "dist/slide-element.min.js",
   "module": "dist/slide-element.es.min.js",
   "scripts": {
+    "start": "snowpack dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "snowpack": "^2.10.3"
+  }
 }

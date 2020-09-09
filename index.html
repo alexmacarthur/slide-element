@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .thing {
+                display: none;
+                background: blue;
+                color: white;
+                border-radius: 3px;
+                padding: 20px;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="grid">
+            <div class="box">
+                <button id="slideThing1">Slide Thing #1</button>
+
+                <div class="thing" id="thing1">
+                    <h1>My First Heading</h1>
+                    <p>My first paragraph.</p>        
+                </div>
+            </div>
+
+            <div class="box">
+                <button id="slideThing2">Slide Thing #2</button>
+
+                <div class="thing" id="thing2">
+                    <h1>My First Heading</h1>
+                    <p>My first paragraph.</p>        
+                </div>
+            </div>
+        </div>
+
+        <script type="module">
+            import { slideToggle } from "./src/slide-element.js";
+
+            document.getElementById('slideThing1').addEventListener('click', (e) => {
+                slideToggle(document.getElementById('thing1'));
+            });
+
+            document.getElementById('slideThing2').addEventListener('click', (e) => {
+                slideToggle(document.getElementById('thing2'));
+            });
+        </script>
+    </body>
+</html>
