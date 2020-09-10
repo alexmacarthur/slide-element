@@ -43,14 +43,9 @@ const removeEventListeners = (element, callback) => {
  * @returns {void}
  */
 const onAnimationComplete = (element, property) => {
-  console.log(property);
-
   return new Promise((resolve) => {
     const eventListenerCallback = (e) => {
-      console.log(e);
-
       if (e.propertyName.includes(property)) {
-        // console.log('done sliding', property);
         removeEventListeners(element, eventListenerCallback);
         resolve();
       }
@@ -70,8 +65,6 @@ const onAnimationComplete = (element, property) => {
  * @returns {Promise}
  */
 const resetAfterAnimation = (element, changedProperties) => {
-
-  // padding is apparently not changing!
 
   return new Promise((resolve) => {
     const promises = changedProperties.reduce((proms, property) => {
@@ -181,7 +174,7 @@ export const slideUp = (element, durationInSeconds = 0.25) => {
 
     const fromPadding = window.getComputedStyle(element).padding;
     const fromHeight = `${element.offsetHeight}px`;
-    const toPadding = "0x;";
+    const toPadding = "0px";
     const toHeight = "0px";
 
     const changedProperties = getChanged({
@@ -195,7 +188,7 @@ export const slideUp = (element, durationInSeconds = 0.25) => {
       resolve();
     });
 
-    element.style.height = fromHeight;
+    setStyleAttributes(element, [fromHeight, fromPadding]);
 
     // This update must happen on a separate tick in order to trigger an animation.
     requestAnimationFrame(() => {
