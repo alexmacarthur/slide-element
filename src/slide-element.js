@@ -46,6 +46,8 @@ const onAnimationComplete = (element, property) => {
   return new Promise((resolve) => {
     const eventListenerCallback = (e) => {
       if (e.propertyName.includes(property)) {
+
+        console.log(e);
         removeEventListeners(element, eventListenerCallback);
         resolve();
       }
@@ -73,7 +75,6 @@ const resetAfterAnimation = (element, changedProperties) => {
     }, []);
 
     return Promise.all(promises).then(() => {
-      console.log("done");
       setStyleAttributes(element, ["", ""]);
       resolve();
     });
@@ -144,6 +145,7 @@ export const slideDown = (element, durationInSeconds = 0.25) => {
     const fromPadding = "0px";
     const fromHeight = "0px";
     const toPadding = window.getComputedStyle(element).padding;
+    debugger;
     const toHeight = `${element.offsetHeight}px`;
 
     const changedProperties = getChanged({
