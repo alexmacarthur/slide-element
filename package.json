@@ -10,7 +10,16 @@
     "build": "NODE_ENV=production rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "files": [
+    "src",
+    "dist"
+  ],
+  "keywords": [
+    "jQuery",
+    "slideToggle",
+    "slideUp",
+    "slideDown"
+  ],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {

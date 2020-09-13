@@ -10,6 +10,10 @@
                 padding: 20px;
             }
 
+            .container {
+                padding: 20px;
+            }
+
             .grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -32,9 +36,9 @@
                 <button id="slideThing2">Slide Thing #2</button>
 
                 <div class="thing" id="thing2">
-                    <h1>My First Heading</h1>
-                    <p>My first paragraph.</p>        
-                </div>
+                        <h1>My First Heading</h1>
+                        <p>My first paragraph.</p>        
+                    </div>
             </div>
         </div>
 
@@ -57,7 +61,9 @@
             });
 
             document.getElementById('slideThing2').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing2'));
+                toggle(document.getElementById('thing2')).then(() => {
+                    console.log('done');
+                });
             });
         </script>
     </body>
