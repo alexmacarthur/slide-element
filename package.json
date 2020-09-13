@@ -4,15 +4,19 @@
   "description": "A jQuery-like collection of functions to help slide elements open & closed.",
   "main": "dist/slide-element.min.js",
   "module": "dist/slide-element.es.min.js",
+  "homepage": "https://github.com/alexmacarthur/slide-element",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build",
+    "start": "serve",
+    "build": "NODE_ENV=production rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
+    "rollup": "^2.26.11",
+    "rollup-plugin-terser": "^7.0.2",
+    "serve": "^11.3.2",
     "snowpack": "^2.10.3"
   }
 }

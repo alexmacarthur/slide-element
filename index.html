@@ -38,15 +38,26 @@
             </div>
         </div>
 
-        <script type="module">
-            import { slideToggle } from "./src/slide-element.js";
-
+        <!-- <script src="./dist/slide-element.min.js"></script>
+        <script>
             document.getElementById('slideThing1').addEventListener('click', (e) => {
-                slideToggle(document.getElementById('thing1'));
+                SlideElement.toggle(document.getElementById('thing1'));
             });
 
             document.getElementById('slideThing2').addEventListener('click', (e) => {
-                slideToggle(document.getElementById('thing2'));
+                SlideElement.toggle(document.getElementById('thing2'));
+            });
+        </script> -->
+
+        <script type="module">
+            import { toggle } from "./src/slide-element.js";
+
+            document.getElementById('slideThing1').addEventListener('click', (e) => {
+                toggle(document.getElementById('thing1'));
+            });
+
+            document.getElementById('slideThing2').addEventListener('click', (e) => {
+                toggle(document.getElementById('thing2'));
             });
         </script>
     </body>

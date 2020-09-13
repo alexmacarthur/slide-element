@@ -1,5 +1,3 @@
-const animatableProperties = ["height", "paddingTop", "paddingBottom"];
-
 /**
  * Set the height & padding style attributes on an element.
  *
@@ -7,7 +5,7 @@ const animatableProperties = ["height", "paddingTop", "paddingBottom"];
  * @param {array} heightAndPadding
  */
 const setStyleAttributes = (element, heightAndPadding) => {
-  animatableProperties.forEach(p => {
+  ["height", "paddingTop", "paddingBottom"].forEach(p => {
     element.style[p] = heightAndPadding[p];
   });
 };
@@ -102,7 +100,7 @@ const resetAfterAnimation = (element, changedProperties) => {
  * @returns {void}
  */
 const setInitialCss = (element, durationInSeconds) => {
-  const computedStyle = window.getComputedStyle(element);
+  const computedStyle = getStyles(element);
   const animationStyles = {
     overflow: "hidden",
     transitionProperty: "padding, height",
@@ -141,9 +139,15 @@ const getChanged = (properties) => {
   }, []);
 };
 
-// const getComputedStyles = (element) => {
-//   return window.getComputedStyle(element);
-// }
+/**
+ * Retrieve the computed styles for an element.
+ * 
+ * @param {Node} element 
+ * @returns {object}
+ */
+const getStyles = (element) => {
+  return window.getComputedStyle(element);
+}
 
 /**
  * Animate an element open.
@@ -152,14 +156,14 @@ const getChanged = (properties) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const slideDown = (element, durationInSeconds = 0.25) => {
+export const down = (element, durationInSeconds = 0.25) => {
   return new Promise((resolve) => {
     setInitialCss(element, durationInSeconds);
 
     element.dataset.isSlidOpen = true;
     element.style.display = "block";
 
-    const computedStyles = window.getComputedStyle(element);
+    const computedStyles = getStyles(element);
 
     triggerAnimation(element, {
       fromTopPadding: "0px",
@@ -222,11 +226,11 @@ const triggerAnimation = (element, propertyValues, callback) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const slideUp = (element, durationInSeconds = 0.25) => {
+export const up = (element, durationInSeconds = 0.25) => {
   return new Promise((resolve) => {
     setInitialCss(element, durationInSeconds);
 
-    const computedStyles = window.getComputedStyle(element);
+    const computedStyles = getStyles(element);
 
     triggerAnimation(element, {
       fromTopPadding: computedStyles.paddingTop,
@@ -250,8 +254,8 @@ export const slideUp = (element, durationInSeconds = 0.25) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const slideToggle = (element, durationInSeconds = 0.25) => {
+export const toggle = (element, durationInSeconds = 0.25) => {
   return element.dataset.isSlidOpen
-    ? slideUp(element, durationInSeconds)
-    : slideDown(element, durationInSeconds);
+    ? up(element, durationInSeconds)
+    : down(element, durationInSeconds);
 };
