@@ -1,4 +1,4 @@
-const animatableProperties = ["height", "padding"];
+const animatableProperties = ["height", "paddingTop", "paddingBottom"];
 
 /**
  * Set the height & padding style attributes on an element.
@@ -7,8 +7,8 @@ const animatableProperties = ["height", "padding"];
  * @param {array} heightAndPadding
  */
 const setStyleAttributes = (element, heightAndPadding) => {
-  animatableProperties.forEach((p, i) => {
-    element.style[p] = heightAndPadding[i];
+  animatableProperties.forEach(p => {
+    element.style[p] = heightAndPadding[p];
   });
 };
 
@@ -37,6 +37,15 @@ const removeEventListeners = (element, callback) => {
 };
 
 /**
+ * Convert a CSS property into a camelCased version, used by JS.
+ * 
+ * @param {string} string 
+ */
+const camelize = (string) => {
+  return string.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+}
+
+/**
  * Fire a one-time function when an animation has completed.
  *
  * @param {function} callback
@@ -45,9 +54,8 @@ const removeEventListeners = (element, callback) => {
 const onAnimationComplete = (element, property) => {
   return new Promise((resolve) => {
     const eventListenerCallback = (e) => {
-      if (e.propertyName.includes(property)) {
 
-        console.log(e);
+      if (camelize(e.propertyName) === property) {
         removeEventListeners(element, eventListenerCallback);
         resolve();
       }
@@ -75,7 +83,12 @@ const resetAfterAnimation = (element, changedProperties) => {
     }, []);
 
     return Promise.all(promises).then(() => {
-      setStyleAttributes(element, ["", ""]);
+      setStyleAttributes(element, {
+        paddingTop: "", 
+        paddingBottom: "",
+        height: ""
+      });
+
       resolve();
     });
   });
@@ -128,6 +141,10 @@ const getChanged = (properties) => {
   }, []);
 };
 
+// const getComputedStyles = (element) => {
+//   return window.getComputedStyle(element);
+// }
+
 /**
  * Animate an element open.
  *
@@ -142,26 +159,61 @@ export const slideDown = (element, durationInSeconds = 0.25) => {
     element.dataset.isSlidOpen = true;
     element.style.display = "block";
 
-    const fromPadding = "0px";
-    const fromHeight = "0px";
-    const toPadding = window.getComputedStyle(element).padding;
-    debugger;
-    const toHeight = `${element.offsetHeight}px`;
+    const computedStyles = window.getComputedStyle(element);
 
-    const changedProperties = getChanged({
-      padding: [fromPadding, toPadding],
-      height: [fromHeight, toHeight],
-    });
-
-    resetAfterAnimation(element, changedProperties).then(() => resolve());
-    setStyleAttributes(element, [fromHeight, fromPadding]);
-
-    // This update must happen on a separate tick in order to trigger an animation.
-    requestAnimationFrame(() =>
-      setStyleAttributes(element, [toHeight, toPadding])
-    );
+    triggerAnimation(element, {
+      fromTopPadding: "0px",
+      fromBottomPadding: "0px",
+      fromHeight: "0px",
+      toTopPadding: computedStyles.paddingTop,
+      toBottomPadding: computedStyles.paddingBottom,
+      toHeight: computedStyles.height
+    }, () => resolve());
   });
 };
+
+/**
+ * Given a bunch of before/after property values, trigger a CSS animation
+ * before & after the next repaint.
+ * 
+ * @param {Node} element 
+ * @param {object} propertyValues 
+ * @param {function} callback 
+ * @returns {void}
+ */
+const triggerAnimation = (element, propertyValues, callback) => {
+  const {
+    fromTopPadding,
+    fromBottomPadding,
+    fromHeight,
+    toTopPadding,
+    toBottomPadding,
+    toHeight
+  } = propertyValues;
+
+  const changedProperties = getChanged({
+    paddingTop: [fromTopPadding, toTopPadding],
+    paddingBottom: [fromBottomPadding, toBottomPadding],
+    height: [fromHeight, toHeight],
+  });
+
+  resetAfterAnimation(element, changedProperties).then(callback);
+
+  setStyleAttributes(element, {
+    paddingTop: fromTopPadding, 
+    paddingBottom: fromBottomPadding, 
+    height: fromHeight  
+  });
+
+  // This update must happen on a separate tick in order to trigger an animation.
+  requestAnimationFrame(() => {
+    setStyleAttributes(element, {
+      paddingTop: toTopPadding, 
+      paddingBottom: toBottomPadding, 
+      height: toHeight  
+    });
+  });
+}
 
 /**
  * Animate an element closed.
@@ -174,29 +226,19 @@ export const slideUp = (element, durationInSeconds = 0.25) => {
   return new Promise((resolve) => {
     setInitialCss(element, durationInSeconds);
 
-    const fromPadding = window.getComputedStyle(element).padding;
-    const fromHeight = `${element.offsetHeight}px`;
-    const toPadding = "0px";
-    const toHeight = "0px";
+    const computedStyles = window.getComputedStyle(element);
 
-    const changedProperties = getChanged({
-      padding: [fromPadding, toPadding],
-      height: [fromHeight, toHeight],
-    });
-
-    resetAfterAnimation(element, changedProperties).then(() => {
+    triggerAnimation(element, {
+      fromTopPadding: computedStyles.paddingTop,
+      fromBottomPadding: computedStyles.paddingBottom,
+      toTopPadding: "0px",
+      toBottomPadding: "0px",
+      fromHeight: `${element.offsetHeight}px`,
+      toHeight: "0px"
+    }, () => {
       delete element.dataset.isSlidOpen;
       element.style.display = "none";
       resolve();
-    });
-
-    setStyleAttributes(element, [fromHeight, fromPadding]);
-
-    // This update must happen on a separate tick in order to trigger an animation.
-    requestAnimationFrame(() => {
-      if (element.style.display !== "none") {
-        setStyleAttributes(element, [toHeight, toPadding]);
-      }
     });
   });
 };
