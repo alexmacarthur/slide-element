@@ -4,11 +4,15 @@ A Promise-based, jQuery-reminiscent collection of functions to help hide and sho
 
 ## Under the Hood
 
-This library relies on CSS animations to perform the transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents and current CSS values, and then the appropriate values are then applied to trigger a transition. In all, `slide-element` comes in at under 1kb gzipped.
+This library relies on CSS animations to perform the transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents and padding (if applicable), and then the appropriate values are then applied to trigger a native transition. In all, `slide-element` comes in at under 1kb gzipped.
 
 ## Installation
 
 `npm install slide-element`
+
+## Setup
+
+Make sure your target element is set to `display: none`, whether that's with a class or inline style.
 
 ## Usage
 
@@ -56,7 +60,7 @@ toggle(document.getElementById("someElement")).then(() => {
 });
 ```
 
-### Options
+### Customizing the Animation
 
 Each function accepts an object to control how the sliding animation executes. You can set your own `duration` and `timingFunction` values.
 
@@ -74,6 +78,19 @@ up(anElement, { duration: 0.5, timingFunction: "linear" });
 | -------------- | -------- | --------------------------------------------------------------- | ------- |
 | duration       | `number` | The speed of the transition in seconds.                         | `.25`   |
 | timingFunction | `string` | The CSS timing function used to define the style of transition. | `ease`  |
+
+## Usage w/o a Bundler
+
+If you'd like to use `slide-element` directly in the browser via CDN, simply load the code, and then reference the function you'd like to use on the global `SlideElement` object: 
+
+```js
+<script src="./dist/slide-element.min.js"></script>
+<script>
+  document.getElementById('someElement').addEventListener('click', (e) => {
+    SlideElement.toggle(document.getElementById('someBox'));
+});
+</script>
+```
 
 ## API
 

@@ -1,7 +1,7 @@
 {
   "name": "slide-element",
   "version": "0.1.0",
-  "description": "A jQuery-like collection of functions to help slide elements open & closed.",
+  "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/slide-element.min.js",
   "module": "dist/slide-element.es.min.js",
   "homepage": "https://github.com/alexmacarthur/slide-element",
