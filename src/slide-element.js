@@ -17,11 +17,13 @@ const setStyleAttributes = (
   propertyValues,
   propertiesPermittedToChange = animatableProperties
 ) => {
-  animatableProperties.forEach((p) => {
-    if (propertiesPermittedToChange.includes(p)) {
-      element.style[p] = propertyValues[p];
+  for (let property in propertyValues) {
+    if (!propertiesPermittedToChange.includes(property)) {
+      delete propertyValues[property];
     }
-  });
+  }
+
+  Object.assign(element.style, propertyValues);
 };
 
 /**
@@ -93,15 +95,27 @@ const resetAfterAnimation = (element, changedProperties) => {
     }, []);
 
     return Promise.all(promises).then(() => {
-      setStyleAttributes(element, {
-        paddingTop: "",
-        paddingBottom: "",
-        height: "",
-      });
+      unsetProperties(element, [
+        ...animatableProperties,
+        "overflow",
+        "transitionProperty",
+        "transitionDuration",
+        "transitionTimingFunction",
+      ]);
 
       resolve();
     });
   });
+};
+
+/**
+ * Reset the given style properties on an element.
+ *
+ * @param {Node} element
+ * @param {array} properties
+ */
+const unsetProperties = (element, properties) => {
+  properties.forEach((p) => (element.style[p] = ""));
 };
 
 /**
@@ -111,9 +125,11 @@ const resetAfterAnimation = (element, changedProperties) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-const setInitialCss = (element, { duration, timingFunction } = options) => {
+const setTransitionProperties = (
+  element,
+  { duration, timingFunction } = options
+) => {
   const computedStyle = getStyles(element);
-  console.log(duration);
   const animationStyles = {
     overflow: "hidden",
     transitionProperty: "padding, height",
@@ -127,11 +143,11 @@ const setInitialCss = (element, { duration, timingFunction } = options) => {
    */
   for (let k in animationStyles) {
     if (computedStyle[k] === animationStyles[k]) {
-      continue;
+      delete animationStyles[k];
     }
-
-    element.style[k] = animationStyles[k];
   }
+
+  Object.assign(element.style, animationStyles);
 };
 
 /**
@@ -172,7 +188,7 @@ const getStyles = (element) => {
  * @param {function} callback
  * @returns {void}
  */
-const triggerAnimation = (element, propertyValues, callback) => {
+const triggerAnimation = (element, options, propertyValues, callback) => {
   const {
     fromTopPadding,
     fromBottomPadding,
@@ -200,6 +216,8 @@ const triggerAnimation = (element, propertyValues, callback) => {
     changedProperties
   );
 
+  setTransitionProperties(element, options);
+
   // This update must happen on a separate tick in order to trigger an animation.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -225,8 +243,6 @@ const triggerAnimation = (element, propertyValues, callback) => {
  */
 export const down = (element, options = defaultOptions) => {
   return new Promise((resolve) => {
-    setInitialCss(element, options);
-
     element.dataset.isSlidOpen = true;
     element.style.display = "block";
 
@@ -234,6 +250,7 @@ export const down = (element, options = defaultOptions) => {
 
     triggerAnimation(
       element,
+      options,
       {
         fromTopPadding: "0px",
         fromBottomPadding: "0px",
@@ -243,7 +260,6 @@ export const down = (element, options = defaultOptions) => {
         toHeight: computedStyles.height,
       },
       () => {
-        console.log("down finished");
         resolve();
       }
     );
@@ -259,12 +275,11 @@ export const down = (element, options = defaultOptions) => {
  */
 export const up = (element, options = defaultOptions) => {
   return new Promise((resolve) => {
-    setInitialCss(element, options);
-
     const computedStyles = getStyles(element);
 
     triggerAnimation(
       element,
+      options,
       {
         fromTopPadding: computedStyles.paddingTop,
         fromBottomPadding: computedStyles.paddingBottom,

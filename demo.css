@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.button {
+    @apply rounded-md bg-blue-500 px-4 py-2 text-white mb-5;
+}
+
+.button:hover {
+    @apply bg-blue-700;
+}

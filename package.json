@@ -8,7 +8,9 @@
   "scripts": {
     "start": "serve",
     "build": "NODE_ENV=production rollup -c",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1", 
+    "tailwind:dev": "tailwindcss build demo.css -o demo.dist.css",
+    "tailwind:prod": "NODE_ENV=production tailwindcss build demo.css -o demo.dist.css"
   },
   "files": [
     "src",
@@ -26,6 +28,7 @@
     "rollup": "^2.26.11",
     "rollup-plugin-terser": "^7.0.2",
     "serve": "^11.3.2",
-    "snowpack": "^2.10.3"
+    "snowpack": "^2.10.3",
+    "tailwindcss": "^1.8.9"
   }
 }

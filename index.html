@@ -1,44 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>
-            .thing {
-                display: none;
-                background: blue;
-                color: white;
-                border-radius: 3px;
-                padding: 20px;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-        </style>
+        <link rel="stylesheet" href="./demo.dist.css"/>
     </head>
-    <body>
+    <body class="p-8">
 
-        <div class="grid">
-            <div class="box">
-                <button id="slideThing1">Slide Thing #1</button>
+        <div class="max-w-xl mx-auto">
+            <div class="mb-6 text-center">
+                <button id="slideThing1" class="button">Slide Box w/ Padding</button>
 
-                <div class="thing" id="thing1">
+                <div class="hidden bg-gray-300 rounded-md py-8" id="thing1">
                     <h1>My First Heading</h1>
                     <p>My first paragraph.</p>        
                 </div>
             </div>
 
-            <div class="box">
-                <button id="slideThing2">Slide Thing #2</button>
+            <div class="text-center">
+                <button id="slideThing2" class="button">Slide Box w/ No Padding</button>
 
-                <div class="thing" id="thing2">
-                        <h1>My First Heading</h1>
-                        <p>My first paragraph.</p>        
-                    </div>
+                <div class="hidden bg-gray-300 rounded-md" id="thing2">
+                    <h1>My First Heading</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>        
+                </div>
             </div>
         </div>
 
@@ -61,9 +44,7 @@
             });
 
             document.getElementById('slideThing2').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing2')).then(() => {
-                    console.log('done');
-                });
+                toggle(document.getElementById('thing2'));
             });
         </script>
     </body>
