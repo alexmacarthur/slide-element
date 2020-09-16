@@ -2,10 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    font-family: 'Heebo', sans-serif;
+}
+
 .button {
     @apply rounded-md bg-blue-500 px-4 py-2 text-white mb-5;
 }
 
 .button:hover {
     @apply bg-blue-700;
+}
+
+p + p {
+    @apply mt-3;
+}
+
+/** Sticky Footer **/
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
+
+a {
+    @apply font-semibold;
 }

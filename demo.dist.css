@@ -21234,6 +21234,10 @@ video {
           animation: bounce 1s infinite;
 }
 
+* {
+  font-family: 'Heebo', sans-serif;
+}
+
 .button {
   border-radius: 0.375rem;
   --bg-opacity: 1;
@@ -21255,12 +21259,31 @@ video {
   background-color: rgba(43, 108, 176, var(--bg-opacity));
 }
 
-.box {
-  --bg-opacity: 1;
-  background-color: #e2e8f0;
-  background-color: rgba(226, 232, 240, var(--bg-opacity));
-  border-radius: 0.375rem;
-  padding: 1rem;
+p + p {
+  margin-top: 0.75rem;
+}
+
+/** Sticky Footer **/
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+a {
+  font-weight: 600;
 }
 
 @media (min-width: 640px) {

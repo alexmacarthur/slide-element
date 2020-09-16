@@ -1,42 +1,136 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="./demo.dist.css"/>
-    </head>
-    <body class="p-8">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@200;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./demo.dist.css" />
+  </head>
+  <body class="px-2 py-6 md:px-8">
+    <main id="#main">
+      <div class="text-center mb-10 max-w-4xl mx-auto">
+        <h1 class="text-3xl font-semibold">slide-element</h1>
+        <h2 class="text-xl mb-3">
+          A small set of functions for hiding & showing elements in a sliding
+          fashion using native CSS animations.
+        </h2>
+        <a
+          class="github-button"
+          href="https://github.com/alexmacarthur/slide-element"
+          data-color-scheme="no-preference: light; light: light; dark: dark;"
+          data-icon="octicon-star"
+          data-size="large"
+          aria-label="Star alexmacarthur/slide-element on GitHub"
+          >Star</a
+        >
+      </div>
 
-        <div class="max-w-xl mx-auto">
-            <div class="mb-6 text-center">
-                <button id="slideThing1" class="button">Slide Box w/ Padding</button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="mb-6 text-center">
+          <h3 class="mb-3">A Little Stuff</h3>
 
-                <div class="hidden bg-gray-300 rounded-md py-8" id="thing1">
-                    <h1>My First Heading</h1>
-                    <p>My first paragraph.</p>        
-                </div>
-            </div>
+          <button id="slideThing1" class="button">Toggle the Box</button>
 
-            <div class="text-center">
-                <button id="slideThing2" class="button">Slide Box w/ No Padding</button>
-
-                <div class="hidden bg-gray-300 rounded-md" id="thing2">
-                    <h1>My First Heading</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>        
-                </div>
-            </div>
+          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing1">
+            <p>Not much here.</p>
+          </div>
         </div>
 
-        <!-- <script src="./dist/slide-element.min.js"></script>
-        <script>
-            document.getElementById('slideThing1').addEventListener('click', (e) => {
-                SlideElement.toggle(document.getElementById('thing1'));
-            });
+        <div class="text-center">
+          <h3 class="mb-3">A Lotta Stuff</h3>
 
-            document.getElementById('slideThing2').addEventListener('click', (e) => {
-                SlideElement.toggle(document.getElementById('thing2'));
-            });
-        </script> -->
+          <button id="slideThing2" class="button">Toggle the Box</button>
 
-        <script type="module">
+          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing2">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Feugiat pretium nibh ipsum consequat nisl vel. Velit euismod in
+              pellentesque massa. Commodo viverra maecenas accumsan lacus vel
+              facilisis. Posuere sollicitudin aliquam ultrices sagittis orci a.
+              Donec ultrices tincidunt arcu non sodales. Turpis egestas sed
+              tempus urna et pharetra pharetra. Sit amet venenatis urna cursus
+              eget nunc scelerisque viverra mauris. Bibendum enim facilisis
+              gravida neque convallis a cras. Ut aliquam purus sit amet luctus
+              venenatis. In ornare quam viverra orci sagittis eu volutpat odio
+              facilisis. Eu nisl nunc mi ipsum faucibus. Donec massa sapien
+              faucibus et molestie ac. Phasellus vestibulum lorem sed risus
+              ultricies. Et odio pellentesque diam volutpat commodo sed.
+              Maecenas pharetra convallis posuere morbi. Mauris pharetra et
+              ultrices neque ornare.
+            </p>
+            <p></p>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipiscing elit. Mi in
+              nulla posuere sollicitudin aliquam ultrices. Et pharetra pharetra
+              massa massa. Eget nunc scelerisque viverra mauris in aliquam. Diam
+              maecenas ultricies mi eget. Velit sed ullamcorper morbi tincidunt.
+              Suspendisse in est ante in nibh mauris cursus. Metus vulputate eu
+              scelerisque felis imperdiet proin fermentum leo. In dictum non
+              consectetur a erat nam at lectus. Convallis aenean et tortor at
+              risus viverra adipiscing at in. Faucibus interdum posuere lorem
+              ipsum dolor sit amet. Et odio pellentesque diam volutpat. Eu
+              ultrices vitae auctor eu. Urna neque viverra justo nec ultrices
+              dui sapien eget mi. Tempor nec feugiat nisl pretium fusce. Nunc
+              faucibus a pellentesque sit amet porttitor eget dolor morbi. Id
+              consectetur purus ut faucibus pulvinar elementum. A pellentesque
+              sit amet porttitor eget.
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h3 class="mb-3">Promise-Based</h3>
+
+          <button id="slideThing3" class="button">Toggle the Box</button>
+
+          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing3">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+              reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="text-center mt-10 mb-1">
+      Built by
+      <a href="https://macarthur.me" rel="noopener noreferrer" target="_blank">
+        Alex MacArthur
+      </a>
+    </footer>
+
+    <script src="./dist/slide-element.min.js"></script>
+    <script>
+      document.getElementById("slideThing1").addEventListener("click", (e) => {
+        SlideElement.toggle(document.getElementById("thing1"));
+      });
+
+      document.getElementById("slideThing2").addEventListener("click", (e) => {
+        SlideElement.toggle(document.getElementById("thing2"));
+      });
+
+      document.getElementById("slideThing3").addEventListener("click", (e) => {
+        const button = e.target;
+
+        button.innerHTML = "Wait for it...";
+
+        SlideElement.toggle(document.getElementById("thing3"), {
+          duration: 1,
+        }).then(() => {
+          button.innerHTML = "Done!";
+        });
+      });
+    </script>
+
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- <script type="module">
             import { toggle } from "./src/slide-element.js";
 
             document.getElementById('slideThing1').addEventListener('click', (e) => {
@@ -46,6 +140,6 @@
             document.getElementById('slideThing2').addEventListener('click', (e) => {
                 toggle(document.getElementById('thing2'));
             });
-        </script>
-    </body>
+        </script> -->
+  </body>
 </html>
