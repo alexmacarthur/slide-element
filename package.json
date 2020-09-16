@@ -25,7 +25,6 @@
   "devDependencies": {
     "rollup": "^2.26.11",
     "rollup-plugin-terser": "^7.0.2",
-    "serve": "^11.3.2",
-    "snowpack": "^2.10.3"
+    "serve": "^11.3.2"
   }
 }
