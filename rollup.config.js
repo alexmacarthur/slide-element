@@ -1,5 +1,6 @@
 const pkg = require("./package.json");
 import { terser } from "rollup-plugin-terser";
+import typescript from '@rollup/plugin-typescript';
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -21,7 +22,7 @@ const OUTPUT_DATA = [
 ];
 
 export default OUTPUT_DATA.map(({ file, format }) => {
-  let plugins = [];
+  let plugins = [typescript()];
 
   if (isProduction) {
     plugins.push(
@@ -34,7 +35,7 @@ export default OUTPUT_DATA.map(({ file, format }) => {
   }
 
   return {
-    input: "./src/slide-element.js",
+    input: "./src/slide-element.ts",
     output: {
       file,
       format,

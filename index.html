@@ -1,70 +1,69 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            .thing {
-                display: none;
-                background: blue;
-                color: white;
-                border-radius: 3px;
-                padding: 20px;
-            }
+  <head>
+    <style>
+      .thing {
+        display: none;
+        background: blue;
+        color: white;
+        border-radius: 3px;
+        padding: 20px;
+      }
 
-            .container {
-                padding: 20px;
-            }
+      .container {
+        padding: 20px;
+      }
 
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-        </style>
-    </head>
-    <body>
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <div class="box">
+        <button id="slideThing1">Slide Thing #1</button>
 
-        <div class="grid">
-            <div class="box">
-                <button id="slideThing1">Slide Thing #1</button>
-
-                <div class="thing" id="thing1">
-                    <h1>My First Heading</h1>
-                    <p>My first paragraph.</p>        
-                </div>
-            </div>
-
-            <div class="box">
-                <button id="slideThing2">Slide Thing #2</button>
-
-                <div class="thing" id="thing2">
-                        <h1>My First Heading</h1>
-                        <p>My first paragraph.</p>        
-                    </div>
-            </div>
+        <div class="thing" id="thing1">
+          <h1>My First Heading</h1>
+          <p>My first paragraph.</p>
         </div>
+      </div>
 
-        <!-- <script src="./dist/slide-element.min.js"></script>
-        <script>
-            document.getElementById('slideThing1').addEventListener('click', (e) => {
-                SlideElement.toggle(document.getElementById('thing1'));
-            });
+      <div class="box">
+        <button id="slideThing2">Slide Thing #2</button>
 
-            document.getElementById('slideThing2').addEventListener('click', (e) => {
-                SlideElement.toggle(document.getElementById('thing2'));
-            });
-        </script> -->
+        <div class="thing" id="thing2">
+          <h1>My First Heading</h1>
+          <p>My first paragraph.</p>
+        </div>
+      </div>
+    </div>
 
-        <script type="module">
-            import { toggle } from "./src/slide-element.js";
+    <!-- <script src="./dist/slide-element.min.js"></script>
+    <script>
+        document.getElementById('slideThing1').addEventListener('click', (e) => {
+            SlideElement.toggle(document.getElementById('thing1'));
+        });
 
-            document.getElementById('slideThing1').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing1'));
-            });
+        document.getElementById('slideThing2').addEventListener('click', (e) => {
+            SlideElement.toggle(document.getElementById('thing2'));
+        });
+    </script> -->
 
-            document.getElementById('slideThing2').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing2')).then(() => {
-                    console.log('done');
-                });
-            });
-        </script>
-    </body>
+    <script type="module">
+      import { toggle } from "./dist/slide-element.es.min.js";
+
+      document.getElementById('slideThing1').addEventListener('click', (e) => {
+        toggle(document.getElementById('thing1'));
+      });
+
+      document.getElementById('slideThing2').addEventListener('click', (e) => {
+        toggle(document.getElementById('thing2')).then(() => {
+            console.log('done');
+        });
+      });
+    </script>
+  </body>
 </html>

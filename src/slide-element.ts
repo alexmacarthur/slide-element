@@ -1,5 +1,11 @@
-const animatableProperties = ["height", "paddingTop", "paddingBottom"];
-const defaultOptions = {
+import { AnyObject, CssPropertyValues, CallbackFunction } from "./types";
+
+const animatableProperties: string[] = [
+  "height",
+  "paddingTop",
+  "paddingBottom",
+];
+const defaultOptions: object = {
   duration: 0.25,
   timingFunction: "ease",
 };
@@ -13,16 +19,15 @@ const defaultOptions = {
  * @returns {void}
  */
 const setStyleAttributes = (
-  element,
-  propertyValues,
+  element: HTMLElement,
+  propertyValues: CssPropertyValues,
   propertiesPermittedToChange = animatableProperties
-) => {
+): void => {
   for (let property in propertyValues) {
     if (!propertiesPermittedToChange.includes(property)) {
-      delete propertyValues[property];
+      delete propertyValues[property as string];
     }
   }
-
   Object.assign(element.style, propertyValues);
 };
 
@@ -33,7 +38,10 @@ const setStyleAttributes = (
  * @param {function} callback
  * @returns {void}
  */
-const addEventListeners = (element, callback) => {
+const addEventListeners = (
+  element: HTMLElement,
+  callback: CallbackFunction
+): void => {
   element.addEventListener("transitionend", callback);
   element.addEventListener("transitioncancel", callback);
 };
@@ -45,7 +53,10 @@ const addEventListeners = (element, callback) => {
  * @param {function} callback
  * @returns {void}
  */
-const removeEventListeners = (element, callback) => {
+const removeEventListeners = (
+  element: HTMLElement,
+  callback: CallbackFunction
+): void => {
   element.removeEventListener("transitionend", callback);
   element.removeEventListener("transitioncancel", callback);
 };
@@ -56,9 +67,12 @@ const removeEventListeners = (element, callback) => {
  * @param {function} callback
  * @returns {void}
  */
-const onAnimationComplete = (element, property) => {
+const onAnimationComplete = (
+  element: HTMLElement,
+  property: string
+): Promise<void> => {
   return new Promise((resolve) => {
-    const eventListenerCallback = function (e) {
+    const eventListenerCallback = function (e: TransitionEvent): void {
       if (camelize(e.propertyName) === property) {
         removeEventListeners(element, eventListenerCallback);
         resolve();
@@ -74,7 +88,7 @@ const onAnimationComplete = (element, property) => {
  *
  * @param {string} string
  */
-const camelize = (string) => {
+const camelize = (string: string): string => {
   return string.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 };
 
@@ -87,12 +101,18 @@ const camelize = (string) => {
  * @param {array} propertiesToReset
  * @returns {Promise}
  */
-const resetAfterAnimation = (element, changedProperties) => {
+const resetAfterAnimation = (
+  element: HTMLElement,
+  changedProperties: Array<string>
+): Promise<Promise<void>> => {
   return new Promise((resolve) => {
-    const promises = changedProperties.reduce((proms, property) => {
-      proms.push(onAnimationComplete(element, property));
-      return proms;
-    }, []);
+    const promises = changedProperties.reduce(
+      (proms: Promise<void>[], property) => {
+        proms.push(onAnimationComplete(element, property));
+        return proms;
+      },
+      []
+    );
 
     return Promise.all(promises).then(() => {
       unsetProperties(element, [
@@ -107,15 +127,17 @@ const resetAfterAnimation = (element, changedProperties) => {
     });
   });
 };
-
 /**
  * Reset the given style properties on an element.
  *
  * @param {Node} element
  * @param {array} properties
  */
-const unsetProperties = (element, properties) => {
-  properties.forEach((p) => (element.style[p] = ""));
+const unsetProperties = (
+  element: HTMLElement,
+  properties: Array<string>
+): void => {
+  properties.forEach((p: string) => (element.style[p] = ""));
 };
 
 /**
@@ -125,10 +147,8 @@ const unsetProperties = (element, properties) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-const setTransitionProperties = (
-  element,
-  { duration, timingFunction } = options
-) => {
+const setTransitionProperties = (element: HTMLElement, options: AnyObject) => {
+  const { duration, timingFunction } = options;
   const computedStyle = getStyles(element);
   const animationStyles = {
     overflow: "hidden",
@@ -136,7 +156,6 @@ const setTransitionProperties = (
     transitionDuration: `${duration}s`,
     transitionTimingFunction: timingFunction,
   };
-
   /**
    * Set these properties only if they aren't already set. If we blindly set them every run,
    * the animation will not work as expected because a reflow is triggered.
@@ -146,27 +165,27 @@ const setTransitionProperties = (
       delete animationStyles[k];
     }
   }
-
   Object.assign(element.style, animationStyles);
 };
-
 /**
  * Given a collection of CSS from/to values, return array of the ones that are different.
  *
  * @param {object} properties Contains property for each CSS attribute, along with from/to values.
  * @returns {array}
  */
-const getChanged = (properties) => {
-  return Object.keys(properties).reduce((changedProperties, property) => {
-    const values = properties[property].map((v) => parseInt(v, 10));
+const getChanged = (properties: any) => {
+  return Object.keys(properties).reduce(
+    (changedProperties: string[], property: string) => {
+      const values = properties[property].map((v: string) => parseInt(v, 10));
+      if (values[0] == values[1]) {
+        return changedProperties;
+      }
 
-    if (values[0] == values[1]) {
+      changedProperties.push(property);
       return changedProperties;
-    }
-
-    changedProperties.push(property);
-    return changedProperties;
-  }, []);
+    },
+    []
+  );
 };
 
 /**
@@ -175,7 +194,7 @@ const getChanged = (properties) => {
  * @param {Node} element
  * @returns {object}
  */
-const getStyles = (element) => {
+const getStyles = (element: HTMLElement): { [key: string]: any } => {
   return window.getComputedStyle(element);
 };
 
@@ -188,7 +207,12 @@ const getStyles = (element) => {
  * @param {function} callback
  * @returns {void}
  */
-const triggerAnimation = (element, options, propertyValues, callback) => {
+const triggerAnimation = (
+  element: HTMLElement,
+  options: object,
+  propertyValues: AnyObject,
+  callback: () => any
+) => {
   const {
     fromTopPadding,
     fromBottomPadding,
@@ -197,7 +221,6 @@ const triggerAnimation = (element, options, propertyValues, callback) => {
     toBottomPadding,
     toHeight,
   } = propertyValues;
-
   const changedProperties = getChanged({
     paddingTop: [fromTopPadding, toTopPadding],
     paddingBottom: [fromBottomPadding, toBottomPadding],
@@ -233,7 +256,6 @@ const triggerAnimation = (element, options, propertyValues, callback) => {
     });
   });
 };
-
 /**
  * Animate an element open.
  *
@@ -241,13 +263,14 @@ const triggerAnimation = (element, options, propertyValues, callback) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const down = (element, options = defaultOptions) => {
+export const down = (
+  element: HTMLElement,
+  options = defaultOptions
+): Promise<void> => {
   return new Promise((resolve) => {
-    element.dataset.isSlidOpen = true;
+    element.dataset.isSlidOpen = "true";
     element.style.display = "block";
-
     const computedStyles = getStyles(element);
-
     triggerAnimation(
       element,
       options,
@@ -265,7 +288,6 @@ export const down = (element, options = defaultOptions) => {
     );
   });
 };
-
 /**
  * Animate an element closed.
  *
@@ -273,10 +295,9 @@ export const down = (element, options = defaultOptions) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const up = (element, options = defaultOptions) => {
+export const up = (element, options = defaultOptions): Promise<void> => {
   return new Promise((resolve) => {
     const computedStyles = getStyles(element);
-
     triggerAnimation(
       element,
       options,
@@ -296,7 +317,6 @@ export const up = (element, options = defaultOptions) => {
     );
   });
 };
-
 /**
  * Animate an element open or closed based on its state.
  *
@@ -304,7 +324,10 @@ export const up = (element, options = defaultOptions) => {
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const toggle = (element, options = defaultOptions) => {
+export const toggle = (
+  element: HTMLElement,
+  options = defaultOptions
+): Promise<void> => {
   return element.dataset.isSlidOpen
     ? up(element, options)
     : down(element, options);
