@@ -1,6 +1,6 @@
 {
   "name": "slide-element",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/slide-element.min.js",
   "module": "dist/slide-element.es.min.js",

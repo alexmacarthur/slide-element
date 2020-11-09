@@ -150,6 +150,7 @@ const unsetProperties = (
  * @returns {void}
  */
 const setTransitionProperties = (element: HTMLElement, options: AnyObject): void => {
+  const computedStyle = getStyles(element);
   const { duration, timingFunction } = options;
   const animationStyles = {
     overflow: "hidden",
@@ -157,6 +158,16 @@ const setTransitionProperties = (element: HTMLElement, options: AnyObject): void
     transitionDuration: `${duration}s`,
     transitionTimingFunction: timingFunction,
   };
+
+  /**
+   * Set these properties only if they aren't already set. If we blindly set them every run,
+   * the animation will not work as expected because a reflow is triggered.
+   */
+  for (let k in animationStyles) {
+    if (computedStyle[k] === animationStyles[k]) {
+      delete animationStyles[k];
+    }
+  }
 
   Object.assign(element.style, animationStyles);
 };
