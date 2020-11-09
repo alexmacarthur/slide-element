@@ -56,7 +56,9 @@
       import { toggle } from "./dist/slide-element.es.min.js";
 
       document.getElementById('slideThing1').addEventListener('click', (e) => {
-        toggle(document.getElementById('thing1'));
+        toggle(document.getElementById('thing1')).then(opened => {
+          console.log(opened);
+        });
       });
 
       document.getElementById('slideThing2').addEventListener('click', (e) => {

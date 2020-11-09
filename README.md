@@ -50,12 +50,12 @@ up(document.getElementById("boxToSlideClosed"));
 
 ### Everything's a Promise
 
-Each of the functions provided return promises, so you can easily wait to perform an action after an animation is complete:
+Each of the functions provided return promises, so you can easily wait to perform an action after an animation is complete. The resolved value will be a boolean indicating if the element has just been opened (`true`) or closed (`false`).
 
 ```js
 import { toggle } from "slide-element";
 
-toggle(document.getElementById("someElement")).then(() => {
+toggle(document.getElementById("someElement")).then((opened) => {
   console.log("toggling is done!");
 });
 ```
@@ -81,7 +81,7 @@ up(anElement, { duration: 0.5, timingFunction: "linear" });
 
 ## Usage w/o a Bundler
 
-If you'd like to use `slide-element` directly in the browser via CDN, simply load the code, and then reference the function you'd like to use on the global `SlideElement` object: 
+If you'd like to use `slide-element` directly in the browser via CDN, simply load the code, and then reference the function you'd like to use on the global `SlideElement` object:
 
 ```js
 <script src="./dist/slide-element.min.js"></script>

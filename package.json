@@ -1,6 +1,6 @@
 {
   "name": "slide-element",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/slide-element.min.js",
   "module": "dist/slide-element.es.min.js",
@@ -8,6 +8,7 @@
   "scripts": {
     "start": "serve",
     "build": "NODE_ENV=production rollup -c",
+    "watch": "NODE_ENV=development rollup -c -w",
     "prettify": "prettier src/**/*.ts --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

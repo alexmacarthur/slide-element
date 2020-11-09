@@ -5,6 +5,7 @@ const animatableProperties: string[] = [
   "paddingTop",
   "paddingBottom",
 ];
+
 const defaultOptions: object = {
   duration: 0.25,
   timingFunction: "ease",
@@ -127,6 +128,7 @@ const resetAfterAnimation = (
     });
   });
 };
+
 /**
  * Reset the given style properties on an element.
  *
@@ -147,24 +149,15 @@ const unsetProperties = (
  * @param {number} durationInSeconds
  * @returns {void}
  */
-const setTransitionProperties = (element: HTMLElement, options: AnyObject) => {
+const setTransitionProperties = (element: HTMLElement, options: AnyObject): void => {
   const { duration, timingFunction } = options;
-  const computedStyle = getStyles(element);
   const animationStyles = {
     overflow: "hidden",
     transitionProperty: "padding, height",
     transitionDuration: `${duration}s`,
     transitionTimingFunction: timingFunction,
   };
-  /**
-   * Set these properties only if they aren't already set. If we blindly set them every run,
-   * the animation will not work as expected because a reflow is triggered.
-   */
-  for (let k in animationStyles) {
-    if (computedStyle[k] === animationStyles[k]) {
-      delete animationStyles[k];
-    }
-  }
+
   Object.assign(element.style, animationStyles);
 };
 /**
@@ -266,7 +259,7 @@ const triggerAnimation = (
 export const down = (
   element: HTMLElement,
   options = defaultOptions
-): Promise<void> => {
+): Promise<boolean> => {
   return new Promise((resolve) => {
     element.dataset.isSlidOpen = "true";
     element.style.display = "block";
@@ -283,7 +276,7 @@ export const down = (
         toHeight: computedStyles.height,
       },
       () => {
-        resolve();
+        resolve(true);
       }
     );
   });
@@ -295,7 +288,7 @@ export const down = (
  * @param {number} durationInSeconds
  * @returns {void}
  */
-export const up = (element, options = defaultOptions): Promise<void> => {
+export const up = (element, options = defaultOptions): Promise<boolean> => {
   return new Promise((resolve) => {
     const computedStyles = getStyles(element);
     triggerAnimation(
@@ -312,7 +305,7 @@ export const up = (element, options = defaultOptions): Promise<void> => {
       () => {
         delete element.dataset.isSlidOpen;
         element.style.display = "none";
-        resolve();
+        resolve(false);
       }
     );
   });
@@ -327,7 +320,7 @@ export const up = (element, options = defaultOptions): Promise<void> => {
 export const toggle = (
   element: HTMLElement,
   options = defaultOptions
-): Promise<void> => {
+): Promise<boolean> => {
   return element.dataset.isSlidOpen
     ? up(element, options)
     : down(element, options);
