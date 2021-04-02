@@ -4,6 +4,11 @@ export type CssPropertyValues = {
   height?: string;
 };
 
+export type Options = {
+  duration?: number;
+  timingFunction?: string;
+}
+
 export type CallbackFunction = (e: TransitionEvent) => any;
 
 export type AnyObject = {

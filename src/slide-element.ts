@@ -1,4 +1,9 @@
-import { AnyObject, CssPropertyValues, CallbackFunction } from "./types";
+import {
+  AnyObject,
+  CssPropertyValues,
+  CallbackFunction,
+  Options,
+} from "./types";
 
 const animatableProperties: string[] = [
   "height",
@@ -6,18 +11,13 @@ const animatableProperties: string[] = [
   "paddingBottom",
 ];
 
-const defaultOptions: object = {
+const defaultOptions: Options = {
   duration: 0.25,
   timingFunction: "ease",
 };
 
 /**
  * Set the height & padding style attributes on an element.
- *
- * @param {Node} element
- * @param {array} animatableProperties
- * @param {array} propertiesPermittedToChange
- * @returns {void}
  */
 const setStyleAttributes = (
   element: HTMLElement,
@@ -34,10 +34,6 @@ const setStyleAttributes = (
 
 /**
  * Add transition event listeners to given element.
- *
- * @param {Node} element
- * @param {function} callback
- * @returns {void}
  */
 const addEventListeners = (
   element: HTMLElement,
@@ -49,10 +45,6 @@ const addEventListeners = (
 
 /**
  * Remove transition event listeners from given element.
- *
- * @param {Node} element
- * @param {function} callback
- * @returns {void}
  */
 const removeEventListeners = (
   element: HTMLElement,
@@ -64,9 +56,6 @@ const removeEventListeners = (
 
 /**
  * Fire a one-time function when an animation has completed.
- *
- * @param {function} callback
- * @returns {void}
  */
 const onAnimationComplete = (
   element: HTMLElement,
@@ -86,8 +75,6 @@ const onAnimationComplete = (
 
 /**
  * Convert a CSS property into a camelCased version, used by JS.
- *
- * @param {string} string
  */
 const camelize = (string: string): string => {
   return string.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
@@ -97,19 +84,16 @@ const camelize = (string: string): string => {
  * Reset explicit values for padding or height attributes
  * after respective animations are complete, and then
  * fire a callback after the animation is effectively "complete."
- *
- * @param {Node} element
- * @param {array} propertiesToReset
- * @returns {Promise}
  */
 const resetAfterAnimation = (
   element: HTMLElement,
   changedProperties: Array<string>
-): Promise<Promise<void>> => {
+): Promise<void> => {
   return new Promise((resolve) => {
     const promises = changedProperties.reduce(
       (proms: Promise<void>[], property) => {
         proms.push(onAnimationComplete(element, property));
+
         return proms;
       },
       []
@@ -131,9 +115,6 @@ const resetAfterAnimation = (
 
 /**
  * Reset the given style properties on an element.
- *
- * @param {Node} element
- * @param {array} properties
  */
 const unsetProperties = (
   element: HTMLElement,
@@ -144,12 +125,11 @@ const unsetProperties = (
 
 /**
  * Set initial CSS required to perform height transition.
- *
- * @param {object} element
- * @param {number} durationInSeconds
- * @returns {void}
  */
-const setTransitionProperties = (element: HTMLElement, options: AnyObject): void => {
+const setTransitionProperties = (
+  element: HTMLElement,
+  options: AnyObject
+): void => {
   const computedStyle = getStyles(element);
   const { duration, timingFunction } = options;
   const animationStyles = {
@@ -171,11 +151,9 @@ const setTransitionProperties = (element: HTMLElement, options: AnyObject): void
 
   Object.assign(element.style, animationStyles);
 };
+
 /**
  * Given a collection of CSS from/to values, return array of the ones that are different.
- *
- * @param {object} properties Contains property for each CSS attribute, along with from/to values.
- * @returns {array}
  */
 const getChanged = (properties: any) => {
   return Object.keys(properties).reduce(
@@ -194,9 +172,6 @@ const getChanged = (properties: any) => {
 
 /**
  * Retrieve the computed styles for an element.
- *
- * @param {Node} element
- * @returns {object}
  */
 const getStyles = (element: HTMLElement): { [key: string]: any } => {
   return window.getComputedStyle(element);
@@ -205,18 +180,13 @@ const getStyles = (element: HTMLElement): { [key: string]: any } => {
 /**
  * Given a bunch of before/after property values, trigger a CSS animation
  * before & after the next repaint.
- *
- * @param {Node} element
- * @param {object} propertyValues
- * @param {function} callback
- * @returns {void}
  */
 const triggerAnimation = (
   element: HTMLElement,
   options: object,
   propertyValues: AnyObject,
   callback: () => any
-) => {
+): void => {
   const {
     fromTopPadding,
     fromBottomPadding,
@@ -260,12 +230,9 @@ const triggerAnimation = (
     });
   });
 };
+
 /**
  * Animate an element open.
- *
- * @param {object} element element to slide
- * @param {number} durationInSeconds
- * @returns {void}
  */
 export const down = (
   element: HTMLElement,
@@ -292,12 +259,9 @@ export const down = (
     );
   });
 };
+
 /**
  * Animate an element closed.
- *
- * @param {object} element element to slide
- * @param {number} durationInSeconds
- * @returns {void}
  */
 export const up = (element, options = defaultOptions): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -321,12 +285,9 @@ export const up = (element, options = defaultOptions): Promise<boolean> => {
     );
   });
 };
+
 /**
  * Animate an element open or closed based on its state.
- *
- * @param {object} element element to slide
- * @param {number} durationInSeconds
- * @returns {void}
  */
 export const toggle = (
   element: HTMLElement,
