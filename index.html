@@ -7,6 +7,10 @@
         background: blue;
         color: white;
         border-radius: 3px;
+        overflow: auto;
+      }
+
+      .inner-wrapper {
         padding: 20px;
       }
 
@@ -26,8 +30,10 @@
         <button id="slideThing1">Slide Thing #1</button>
 
         <div class="thing" id="thing1">
-          <h1>My First Heading</h1>
-          <p>My first paragraph.</p>
+          <div class="inner-wrapper">
+            <h1>My First Heading</h1>
+            <p>My first paragraph.</p>
+          </div>
         </div>
       </div>
 
@@ -35,13 +41,16 @@
         <button id="slideThing2">Slide Thing #2</button>
 
         <div class="thing" id="thing2">
-          <h1>My First Heading</h1>
-          <p>My first paragraph.</p>
+          <div class="inner-wrapper">
+            <h1>My First Heading</h1>
+            <p>My first paragraph.</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- <script src="./dist/slide-element.min.js"></script>
+    <!--
+    <script src="./dist/index.umd.js"></script>
     <script>
         document.getElementById('slideThing1').addEventListener('click', (e) => {
             SlideElement.toggle(document.getElementById('thing1'));
@@ -50,10 +59,11 @@
         document.getElementById('slideThing2').addEventListener('click', (e) => {
             SlideElement.toggle(document.getElementById('thing2'));
         });
-    </script> -->
+    </script>
+    -->
 
     <script type="module">
-      import { toggle } from "./dist/slide-element.es.min.js";
+      import { toggle } from "./dist/index.modern.js";
 
       document.getElementById('slideThing1').addEventListener('click', (e) => {
         toggle(document.getElementById('thing1')).then(opened => {
@@ -62,8 +72,8 @@
       });
 
       document.getElementById('slideThing2').addEventListener('click', (e) => {
-        toggle(document.getElementById('thing2')).then(() => {
-            console.log('done');
+        toggle(document.getElementById('thing2')).then((opened) => {
+          console.log(opened);
         });
       });
     </script>

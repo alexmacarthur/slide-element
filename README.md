@@ -1,18 +1,20 @@
 # slide-element
 
-A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.
+A tiny (~500 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.
 
-## Under the Hood
+## Why?
 
-This library relies on CSS animations to perform the transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents and padding (if applicable), and then the appropriate values are then applied to trigger a native transition. In all, `slide-element` comes in at under 1kb gzipped.
+Using JavaScript to animate an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not show how much content you'll be animating over.
+
+This library gets the job done using native CSS transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition.
 
 ## Installation
 
-`npm install slide-element`
+Run `npm install slide-element`, or use a CDN like [unpkg](https://unpkg.com/).
 
 ## Setup
 
-Make sure your target element is set to `display: none`, whether that's with a class or inline style.
+Make sure your target element is set to `display: none`.
 
 ## Usage
 
@@ -20,7 +22,7 @@ Make sure your target element is set to `display: none`, whether that's with a c
 
 Use the `toggle` function to slide an element open & closed based on its current state.
 
-```js
+```javascript
 import { toggle } from "slide-element";
 
 document.getElementById("button").addEventListener("click", (e) => {
@@ -32,7 +34,7 @@ document.getElementById("button").addEventListener("click", (e) => {
 
 Use the `down` function to slide an element open.
 
-```js
+```javascript
 import { down } from "slide-element";
 
 down(document.getElementById("boxToSlideOpen"));
@@ -42,7 +44,7 @@ down(document.getElementById("boxToSlideOpen"));
 
 Use the `up` function to slide an element closed, and then set its `display` property to `none`.
 
-```js
+```javascript
 import { up } from "slide-element";
 
 up(document.getElementById("boxToSlideClosed"));
@@ -52,39 +54,38 @@ up(document.getElementById("boxToSlideClosed"));
 
 Each of the functions provided return promises, so you can easily wait to perform an action after an animation is complete. The resolved value will be a boolean indicating if the element has just been opened (`true`) or closed (`false`).
 
-```js
+```typescript
 import { toggle } from "slide-element";
 
-toggle(document.getElementById("someElement")).then((opened) => {
-  console.log("toggling is done!");
+toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
+  console.log("Toggling is done!");
 });
 ```
 
 ### Customizing the Animation
 
-Each function accepts an object to control how the sliding animation executes. You can set your own `duration` and `timingFunction` values.
+By default, `slide-element` uses the following transition property values:
 
-```js
-import { up } from "slide-element";
+| Property                 | Value  |
+| ------------------------ | ------ |
+| transitionDuration       | `.25s` |
+| transitionTimingFunction | `ease` |
 
-const anElement = document.getElementById("anElement");
+You can override these by passing an object as the seceond parameter of any method:
 
-up(anElement, { duration: 0.5, timingFunction: "linear" });
+```javascript
+up(document.getElementById("element"), {
+  transitionDuration: ".5s",
+  transitionTimingFunction: "ease-in-out",
+});
 ```
-
-### Options
-
-| Option         | Type     | Description                                                     | Default |
-| -------------- | -------- | --------------------------------------------------------------- | ------- |
-| duration       | `number` | The speed of the transition in seconds.                         | `.25`   |
-| timingFunction | `string` | The CSS timing function used to define the style of transition. | `ease`  |
 
 ## Usage w/o a Bundler
 
 If you'd like to use `slide-element` directly in the browser via CDN, simply load the code, and then reference the function you'd like to use on the global `SlideElement` object:
 
-```js
-<script src="./dist/slide-element.min.js"></script>
+```javascript
+<script src="./path/to/slide-element.js"></script>
 <script>
   document.getElementById('someElement').addEventListener('click', (e) => {
     SlideElement.toggle(document.getElementById('someBox'));
@@ -94,12 +95,31 @@ If you'd like to use `slide-element` directly in the browser via CDN, simply loa
 
 ## API
 
-### `toggle(node[, options]), up(node[, options]), down(node[, options])`,
+```typescript
+// Toggle an element based on current state.
+toggle(element: HTMLElement, options?: object): Promise<boolean>
+
+// Slide an element down.
+up(element: HTMLElement, options?: object): Promise<boolean>
+
+// Slide an element down.
+down(element: HTMLElement, options?: object): Promise<boolean>
+```
 
 | Param   | Type     | Description                                  |
 | ------- | -------- | -------------------------------------------- |
 | node    | `Node`   | A single HTML node to be slid open or closed |
 | options | `object` | Options to customize sliding animation.      |
+
+## Gotchas
+
+This library strictly animates an element's `height` property. So, targeting an element with `padding` may cause some unexpected weirdness. To prevent this from happening, ensure that the target element itself is void of padding, and instead place it within a nested "wrapper" element. For example:
+
+```html
+<div id="myTarget" style="display: none;">
+  <div style="padding: 1rem">My contents!</div>
+</div>
+```
 
 ## Contributions
 
