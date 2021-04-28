@@ -1,145 +1,151 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link
       href="https://fonts.googleapis.com/css2?family=Heebo:wght@200;600&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" />
     <link rel="stylesheet" href="./demo.dist.css" />
   </head>
   <body class="px-2 py-6 md:px-8">
     <main id="#main">
       <div class="text-center mb-10 max-w-4xl mx-auto">
-        <h1 class="text-3xl font-semibold">slide-element</h1>
-        <h2 class="text-xl mb-3">
-          A small set of functions for hiding & showing elements in a sliding
-          fashion using native CSS animations.
-        </h2>
-        <a
-          class="github-button"
-          href="https://github.com/alexmacarthur/slide-element"
-          data-color-scheme="no-preference: light; light: light; dark: dark;"
-          data-icon="octicon-star"
-          data-size="large"
-          aria-label="Star alexmacarthur/slide-element on GitHub"
-          >Star</a
-        >
+        <div class="max-w-2xl mx-auto mb-6">
+          <h1 class="text-3xl font-semibold mb-1">slide-element</h1>
+          <h2 class="text-xl mb-3">
+            A small (~500b gzipped) library for hiding & showing elements in a sliding
+            fashion using native CSS animations.
+          </h2>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="mb-6 text-center">
-          <h3 class="mb-3">A Little Stuff</h3>
+      <div class="text-center">
+        <div class="mb-16">
+        <h2 class="text-3xl mb-8">Code Examples</h2>
+      <section class="pb-6 max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-lg md:text-2xl mr-4">Slide Elements Down</h3>
+          <button class="button" data-code-button="down">Show Code</button>
+        </div>
+        <div class="hidden" data-code-block="down">
+        <pre>
+<code class="language-js">
+import { down } from 'slide-element';
 
-          <button id="slideThing1" class="button">Toggle the Box</button>
+// Target any element (make sure it's set to `display: none`).
+const aBox = document.getElementById("aBox");
 
-          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing1">
-            <p>Not much here.</p>
-          </div>
+down(aBox).then(() => {
+  // Will fire after a sliding animation is complete.
+  console.log("The box has been slid down!");
+});</code>
+        </pre>
+      </div>
+      </section>
+
+      <section class="pb-6 max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-lg md:text-2xl mr-4">Slide Elements Up</h3>
+          <button class="button" data-code-button="up">Show Code</button>
+        </div>
+        <div class="hidden" data-code-block="up">
+        <pre>
+<code class="language-js">
+import { up } from 'slide-element';
+
+const aBox = document.getElementById("aBox");
+
+up(aBox).then(() => {
+  console.log("The box has been slid up!");
+});</code>
+        </pre>
+      </div>
+      </section>
+      <section class="max-w-2xl mx-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg md:text-2xl mr-6">Toggle Elements</h3>
+          <button class="button" data-code-button="toggle">Show Code</button>
+        </div>
+        <div class="hidden" data-code-block="toggle">
+        <pre>
+<code class="language-js">
+import { toggle } from 'slide-element';
+
+const aBox = document.getElementById("aBox");
+
+toggle(aBox).then((open) => {
+  console.log(`The box has been slid ${open ? 'down' : 'up'}!`);
+});</code>
+        </pre>
         </div>
 
-        <div class="text-center">
-          <h3 class="mb-3">A Lotta Stuff</h3>
+        </section>
+      </div>
 
-          <button id="slideThing2" class="button">Toggle the Box</button>
+      <hr class="divider" />
 
-          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing2">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Feugiat pretium nibh ipsum consequat nisl vel. Velit euismod in
-              pellentesque massa. Commodo viverra maecenas accumsan lacus vel
-              facilisis. Posuere sollicitudin aliquam ultrices sagittis orci a.
-              Donec ultrices tincidunt arcu non sodales. Turpis egestas sed
-              tempus urna et pharetra pharetra. Sit amet venenatis urna cursus
-              eget nunc scelerisque viverra mauris. Bibendum enim facilisis
-              gravida neque convallis a cras. Ut aliquam purus sit amet luctus
-              venenatis. In ornare quam viverra orci sagittis eu volutpat odio
-              facilisis. Eu nisl nunc mi ipsum faucibus. Donec massa sapien
-              faucibus et molestie ac. Phasellus vestibulum lorem sed risus
-              ultricies. Et odio pellentesque diam volutpat commodo sed.
-              Maecenas pharetra convallis posuere morbi. Mauris pharetra et
-              ultrices neque ornare.
-            </p>
-            <p></p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipiscing elit. Mi in
-              nulla posuere sollicitudin aliquam ultrices. Et pharetra pharetra
-              massa massa. Eget nunc scelerisque viverra mauris in aliquam. Diam
-              maecenas ultricies mi eget. Velit sed ullamcorper morbi tincidunt.
-              Suspendisse in est ante in nibh mauris cursus. Metus vulputate eu
-              scelerisque felis imperdiet proin fermentum leo. In dictum non
-              consectetur a erat nam at lectus. Convallis aenean et tortor at
-              risus viverra adipiscing at in. Faucibus interdum posuere lorem
-              ipsum dolor sit amet. Et odio pellentesque diam volutpat. Eu
-              ultrices vitae auctor eu. Urna neque viverra justo nec ultrices
-              dui sapien eget mi. Tempor nec feugiat nisl pretium fusce. Nunc
-              faucibus a pellentesque sit amet porttitor eget dolor morbi. Id
-              consectetur purus ut faucibus pulvinar elementum. A pellentesque
-              sit amet porttitor eget.
-            </p>
+      <div class="mb-16 mt-12">
+        <h2 class="text-3xl mb-8">Installation Options</h2>
+
+        <div class="flex flex-col md:inline-block">
+          <div class="inline-block">
+            <code class="language-js">npm install slide-element</code>
           </div>
+          <span class="mt-5 md:mt-0 text-xl">or <a href="https://unpkg.com/slide-element" target="_blank">via CDN</a></span>
         </div>
+      </div>
 
-        <div class="text-center">
-          <h3 class="mb-3">Promise-Based</h3>
+      <hr class="divider" />
 
-          <button id="slideThing3" class="button">Toggle the Box</button>
+      <div class="mb-16 mt-12">
+        <h2 class="text-3xl mb-8">Want More Info?</h2>
 
-          <div class="hidden bg-gray-300 rounded-md p-6 text-left" id="thing3">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
-            </p>
-          </div>
+        <a href="http://github.com/alexmacarthur/slide-element" class="text-xl" target="_blank">Read the Docs</a>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="mb-16 mt-12">
+        <h2 class="text-3xl mb-8">Find This Useful?</h2>
+
+        <div class="github-button-wrapper text-center">
+        <span class="text-xl flex items-center justify-center"><span class="mr-2">Star it on GitHub!</span> <a class="github-button" href="https://github.com/alexmacarthur/slide-element"
+          data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large"
+          aria-label="Star alexmacarthur/slide-element on GitHub">Star</a></span>
         </div>
       </div>
     </main>
 
-    <footer class="text-center mt-10 mb-1">
+    <footer class="text-center mb-1 pb-6">
       Built by
       <a href="https://macarthur.me" rel="noopener noreferrer" target="_blank">
         Alex MacArthur
       </a>
     </footer>
 
-    <script src="./dist/slide-element.min.js"></script>
+    <script src="https://unpkg.com/slide-element@1.0.0/dist/index.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
     <script>
-      document.getElementById("slideThing1").addEventListener("click", (e) => {
-        SlideElement.toggle(document.getElementById("thing1"));
-      });
 
-      document.getElementById("slideThing2").addEventListener("click", (e) => {
-        SlideElement.toggle(document.getElementById("thing2"));
-      });
+      document.querySelectorAll('[data-code-button]').forEach(button => {
+        button.addEventListener('click', e => {
+          const example = e.target.dataset.codeButton;
 
-      document.getElementById("slideThing3").addEventListener("click", (e) => {
-        const button = e.target;
+          button.innerHTML = "Sliding...";
 
-        button.innerHTML = "Wait for it...";
-
-        SlideElement.toggle(document.getElementById("thing3"), {
-          duration: 1,
-        }).then(() => {
-          button.innerHTML = "Done!";
+          SlideElement.toggle(document.querySelector(`[data-code-block="${example}"]`), {
+            transitionDuration: '.35s'
+          }).then(open => {
+            button.innerHTML = open ? "Hide Code" : "Show Code";
+          });
         });
       });
     </script>
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <!-- <script type="module">
-            import { toggle } from "./src/slide-element.js";
-
-            document.getElementById('slideThing1').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing1'));
-            });
-
-            document.getElementById('slideThing2').addEventListener('click', (e) => {
-                toggle(document.getElementById('thing2'));
-            });
-        </script> -->
   </body>
 </html>

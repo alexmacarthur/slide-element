@@ -2,16 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+*:not(code *, pre *) {
     font-family: 'Heebo', sans-serif;
 }
 
 .button {
-    @apply rounded-md bg-blue-500 px-4 py-2 text-white mb-5;
+    @apply rounded-md bg-blue-400 px-4 py-2 text-white;
+}
+
+a {
+  @apply text-blue-400 relative;
+}
+
+.divider {
+  height: 3px;
+  @apply rounded-md bg-gray-200 my-5 max-w-2xl mx-auto;
+  width: 100%;
+  border: 0;
+}
+
+.github-button-wrapper span {
+  @apply flex;
+}
+
+a:hover {
+  @apply text-blue-500
+}
+
+a:hover:after {
+  @apply bg-blue-500;
+}
+
+a:after {
+  @apply bg-blue-400 rounded-md;
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+}
+
+pre {
+  margin: 0 !important;
+}
+
+div > code {
+  @apply p-3 !important;
 }
 
 .button:hover {
-    @apply bg-blue-700;
+    @apply bg-blue-500;
 }
 
 p + p {

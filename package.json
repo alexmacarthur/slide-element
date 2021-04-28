@@ -1,34 +1,20 @@
 {
-  "name": "slide-element",
-  "version": "0.1.0",
-  "description": "A jQuery-like collection of functions to help slide elements open & closed.",
-  "main": "dist/slide-element.min.js",
-  "module": "dist/slide-element.es.min.js",
-  "homepage": "https://github.com/alexmacarthur/slide-element",
+  "name": "slide-element-marking-page",
+  "private": true,
   "scripts": {
     "start": "serve",
-    "build": "NODE_ENV=production rollup -c",
-    "test": "echo \"Error: no test specified\" && exit 1", 
-    "tailwind:dev": "tailwindcss build demo.css -o demo.dist.css",
-    "tailwind:prod": "NODE_ENV=production tailwindcss build demo.css -o demo.dist.css"
+    "dev": "NODE_ENV=development postcss demo.css -o demo.dist.css -w",
+    "build": "NODE_ENV=production postcss demo.css -o demo.dist.css"
   },
-  "files": [
-    "src",
-    "dist"
-  ],
-  "keywords": [
-    "jQuery",
-    "slideToggle",
-    "slideUp",
-    "slideDown"
-  ],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
-    "rollup": "^2.26.11",
-    "rollup-plugin-terser": "^7.0.2",
     "serve": "^11.3.2",
-    "snowpack": "^2.10.3",
-    "tailwindcss": "^1.8.9"
+    "tailwindcss": "^2.1.2"
+  },
+  "dependencies": {
+    "postcss": "^8.2.13",
+    "postcss-cli": "^8.3.1",
+    "slide-element": "^1.0.0"
   }
 }
