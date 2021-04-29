@@ -1,150 +1,136 @@
 import { Options } from "./types";
 
-const addEventListenerTypes: string[] = ["transitionend", "transitioncancel"];
+let SlideController = (element: HTMLElement, options: Options) => {
+  let eventListerTypes: string[] = ["transitionend", "transitioncancel"];
 
-let ELEMENT: HTMLElement;
-let OPTIONS: Options;
+  let getRawHeight = () => element.clientHeight;
+  let getElementStyle = () => element.style;
+  let setDisplay = (value: string) => (getElementStyle().display = value);
 
-/**
- * Add transition event listeners to given element.
- */
-const addEventListeners = (callback: EventListener): void => {
-  addEventListenerTypes.forEach((listenerType) => {
-    ELEMENT.addEventListener(
-      listenerType as keyof HTMLElementEventMap,
-      callback
-    );
-  });
-};
+  /**
+   * Fire a one-time function when an animation has completed.
+   */
+  let waitForAnimationCompletion = (): Promise<void> => {
+    return new Promise((resolve) => {
+      eventListerTypes.forEach((listenerType, index) => {
+        element.addEventListener(
+          listenerType as keyof HTMLElementEventMap,
+          (e) => {
+            // Dispatch the _other_ transition event, in order to clean up the remaining listener.
+            element.dispatchEvent(
+              new TransitionEvent(
+                // Grab the string for the _other_ transition event.
+                e.type == listenerType
+                  ? eventListerTypes[(index ^= 1)]
+                  : listenerType
+              )
+            );
 
-/**
- * Remove transition event listeners from given element.
- */
-const removeEventListeners = (callback: EventListener): void => {
-  addEventListenerTypes.forEach((listenerType) => {
-    ELEMENT.removeEventListener(
-      listenerType as keyof HTMLElementEventMap,
-      callback
-    );
-  });
-};
-
-/**
- * Fire a one-time function when an animation has completed.
- */
-const waitForAnimationCompletion = (): Promise<void> => {
-  return new Promise((resolve) => {
-    const eventListenerCallback = function (): void {
-      removeEventListeners(eventListenerCallback);
-      resolve();
-    };
-
-    addEventListeners(eventListenerCallback);
-  });
-};
-
-/**
- * Set initial CSS required to perform height transition.
- */
-const updateTransitionProperties = (add: boolean = true): void => {
-  const animationStyles = Object.assign(
-    {
-      height: "",
-      overflow: "hidden",
-      transitionDuration: ".25s",
-      transitionTimingFunction: "ease"
-    },
-    OPTIONS
-  );
-
-  if (add) {
-    Object.assign(ELEMENT.style, animationStyles);
-    return;
-  }
-
-  // Unset properties from element...
-  Object.keys(animationStyles).forEach((p: string) => (ELEMENT.style[p] = ""));
-};
-
-/**
- * Given a bunch of before/after property values, trigger a CSS animation
- * before & after the next repaint.
- */
-const triggerAnimation = (direction: "down" | "up"): Promise<void> => {
-  return new Promise((resolve) => {
-    updateTransitionProperties();
-
-    const heightValues: string[] = [
-      "0px",
-      window.getComputedStyle(ELEMENT).height,
-    ];
-
-    if (direction === "up") {
-      heightValues.reverse();
-    }
-
-    const [from, to] = heightValues;
-
-    waitForAnimationCompletion().then(() => {
-      updateTransitionProperties(false);
-
-      resolve();
-    });
-
-    ELEMENT.style.height = from;
-
-    // This update must happen on a separate tick in order to trigger an animation.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        ELEMENT.style.height = to;
+            resolve();
+          },
+          {
+            once: true,
+          }
+        );
       });
     });
-  });
+  };
+
+  /**
+   * Set initial CSS required to perform height transition.
+   */
+  let updateTransitionProperties = (forceClear = false): void => {
+    let animationStyles = Object.assign(
+      {
+        height: "",
+        overflow: "hidden",
+        transitionDuration: ".25s",
+        transitionTimingFunction: "ease",
+      },
+      options
+    );
+
+    Object.entries(animationStyles).forEach(([key, value]) => {
+      getElementStyle()[key] = forceClear ? "" : value;
+    });
+  };
+
+  /**
+   * Given a bunch of before/after property values, trigger a CSS animation
+   * before & after the next repaint.
+   */
+  let triggerAnimation = (willOpen: boolean): Promise<void> => {
+    return new Promise((resolve) => {
+      updateTransitionProperties();
+
+      let heightValues: string[] = [`${getRawHeight()}px`, "0px"];
+
+      if (willOpen) {
+        heightValues.reverse();
+      }
+
+      let [from, to] = heightValues;
+
+      waitForAnimationCompletion().then(() => {
+        updateTransitionProperties(true);
+
+        resolve();
+      });
+
+      getElementStyle().height = from;
+
+      // This update must happen on a separate tick in order to trigger an animation.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          getElementStyle().height = to;
+        });
+      });
+    });
+  };
+
+  let up = async () => {
+    await triggerAnimation(false);
+
+    setDisplay("none");
+
+    return Promise.resolve(false);
+  };
+
+  let down = async () => {
+    setDisplay("block");
+
+    await triggerAnimation(true);
+
+    return Promise.resolve(true);
+  };
+
+  let toggle = () => {
+    return getRawHeight() ? up() : down();
+  };
+
+  return { up, down, toggle };
 };
 
 /**
  * Animate an element open.
  */
-export const down = async (
+export let down = async (
   element: HTMLElement,
   options = {}
 ): Promise<boolean> => {
-  ELEMENT = element;
-  OPTIONS = options;
-
-  element.dataset.isSlidOpen = "1";
-  element.style.display = "block";
-
-  await triggerAnimation("down");
-
-  return Promise.resolve(true);
+  return await SlideController(element, options).down();
 };
 
 /**
  * Animate an element closed.
  */
-export const up = async (element, options = {}): Promise<boolean> => {
-  ELEMENT = element;
-  OPTIONS = options;
-
-  await triggerAnimation("up");
-
-  delete element.dataset.isSlidOpen;
-  element.style.display = "none";
-  return Promise.resolve(false);
+export let up = async (element, options = {}): Promise<boolean> => {
+  return await SlideController(element, options).up();
 };
 
 /**
  * Animate an element open or closed based on its state.
  */
-export const toggle = (
-  element: HTMLElement,
-  options = {}
-): Promise<boolean> => {
-  ELEMENT = element;
-  OPTIONS = options;
-
-  return element.dataset.isSlidOpen
-    ? up(element, options)
-    : down(element, options);
+export let toggle = (element: HTMLElement, options = {}): Promise<boolean> => {
+  return SlideController(element, options).toggle();
 };

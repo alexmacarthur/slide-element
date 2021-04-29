@@ -1,29 +1,26 @@
 import { up, down, toggle } from "./index";
 import { fireEvent, screen } from "@testing-library/dom";
 
+beforeEach(() => {
+  window.TransitionEvent = Event;
+  jest
+    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
+    .mockImplementation(() => 100);
+});
+
 it("removes event listeners after finishing", async () => {
   return await new Promise((resolve) => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
     const el = screen.getByTestId("content");
-    const removeEventListenersSpy = jest.spyOn(el, "removeEventListener");
     const addEventListenersSpy = jest.spyOn(el, "addEventListener");
 
     down(el).then(() => {
-      const removedEvents = removeEventListenersSpy.mock.calls
-        .map((e) => {
-          return e[0];
-        })
-        .sort();
-
       const addedEvents = addEventListenersSpy.mock.calls
         .map((e) => {
           return e[0];
         })
         .sort();
 
-      expect(removedEvents).toEqual(
-        ["transitionend", "transitioncancel"].sort()
-      );
       expect(addedEvents).toEqual(["transitionend", "transitioncancel"].sort());
 
       return resolve();
@@ -40,7 +37,7 @@ it("opens element", async () => {
 
     down(el).then((opened) => {
       expect(opened).toBe(true);
-      expect(el.dataset.isSlidOpen).toEqual("1");
+      expect(el.style.display).toEqual("block");
 
       return resolve();
     });
@@ -56,7 +53,7 @@ it("closes element", async () => {
 
     up(el).then((opened) => {
       expect(opened).toBe(false);
-      expect(el.dataset.isSlidOpen).toBeUndefined();
+      expect(el.style.display).toEqual("none");
 
       return resolve();
     });
@@ -69,6 +66,10 @@ document.body.innerHTML = `<div data-testid="content" style="display: none;">Con
 const el = screen.getByTestId("content");
 
 it("toggles element open", async () => {
+  jest
+    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
+    .mockImplementation(() => 0);
+
   return await new Promise((resolve) => {
     toggle(el).then((opened) => {
       expect(opened).toBe(true);
