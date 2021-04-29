@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "postcss": "^8.2.13",
-    "postcss-cli": "^8.3.1",
-    "slide-element": "^1.0.0"
+    "postcss-cli": "^8.3.1"
   }
 }
