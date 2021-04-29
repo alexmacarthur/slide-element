@@ -1,7 +1,7 @@
 import { Options } from "./types";
 
 let SlideController = (element: HTMLElement, options: Options) => {
-  let eventListerTypes: string[] = ["transitionend", "transitioncancel"];
+  let eventListenerTypes: string[] = ["transitionend", "transitioncancel"];
 
   let getRawHeight = () => element.clientHeight;
   let getElementStyle = () => element.style;
@@ -12,18 +12,13 @@ let SlideController = (element: HTMLElement, options: Options) => {
    */
   let waitForAnimationCompletion = (): Promise<void> => {
     return new Promise((resolve) => {
-      eventListerTypes.forEach((listenerType, index) => {
+      eventListenerTypes.forEach((listenerType, index) => {
         element.addEventListener(
           listenerType as keyof HTMLElementEventMap,
-          (e) => {
+          () => {
             // Dispatch the _other_ transition event, in order to clean up the remaining listener.
             element.dispatchEvent(
-              new TransitionEvent(
-                // Grab the string for the _other_ transition event.
-                e.type == listenerType
-                  ? eventListerTypes[(index ^= 1)]
-                  : listenerType
-              )
+              new TransitionEvent(eventListenerTypes[index ^ 1])
             );
 
             resolve();
