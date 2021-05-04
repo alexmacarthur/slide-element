@@ -4,7 +4,7 @@ A tiny (~500 bytes gzipped!) Promise-based, jQuery-reminiscent library for hidin
 
 ## Why?
 
-Using JavaScript to animate an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not show how much content you'll be animating over.
+Using JavaScript to animate an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
 
 This library gets the job done using native CSS transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition.
 
