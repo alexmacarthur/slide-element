@@ -10,7 +10,7 @@ This library gets the job done using native CSS transitions, but doesn't require
 
 ## Installation
 
-Run `npm install slide-element`, or use a CDN like [unpkg](https://unpkg.com/).
+Run `npm install slide-element`, or use a CDN like [unpkg](https://unpkg.com/slide-element).
 
 ## Setup
 
