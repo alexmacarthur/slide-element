@@ -12,21 +12,13 @@ let SlideController = (element: HTMLElement, options: Options) => {
    */
   let waitForAnimationCompletion = (): Promise<void> => {
     return new Promise((resolve) => {
-      eventListenerTypes.forEach((listenerType, index) => {
-        element.addEventListener(
-          listenerType as keyof HTMLElementEventMap,
-          () => {
-            // Dispatch the _other_ transition event, in order to clean up the remaining listener.
-            element.dispatchEvent(
-              new TransitionEvent(eventListenerTypes[index ^ 1])
-            );
+      eventListenerTypes.forEach((listenerType) => {
+        element[`on${listenerType}`] = () => {
+          // Remove all listeners.
+          eventListenerTypes.forEach((type) => (element[`on${type}`] = null));
 
-            resolve();
-          },
-          {
-            once: true,
-          }
-        );
+          resolve();
+        };
       });
     });
   };
