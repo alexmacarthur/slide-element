@@ -1,12 +1,14 @@
 # slide-element
 
-A tiny (~500 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.
+A [tiny](https://bundlephobia.com/result?p=slide-element) (~600 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.
 
 ## Why?
 
-Using JavaScript to animate an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
+Using JavaScript to **animate** an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
 
 This library gets the job done using native CSS transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition.
+
+It's small, smooth, and focuses on doing one job well: sliding stuff open and closed.
 
 ## Installation
 
@@ -66,10 +68,10 @@ toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
 
 By default, `slide-element` uses the following transition property values:
 
-| Property                 | Value  |
-| ------------------------ | ------ |
-| transitionDuration       | `.25s` |
-| transitionTimingFunction | `ease` |
+Property                 | Value
+------------------------ | ------
+transitionDuration       | `.25s`
+transitionTimingFunction | `ease`
 
 You can override these by passing an object as the seceond parameter of any method:
 
@@ -77,6 +79,16 @@ You can override these by passing an object as the seceond parameter of any meth
 up(document.getElementById("element"), {
   transitionDuration: ".5s",
   transitionTimingFunction: "ease-in-out",
+});
+```
+
+### Customizing the Opened `display` Value
+
+Out of the box, `slide-element` will set your opened element to `display: block;`. If you'd like to customize this, pass a `display` value as an option:
+
+```javascript
+down(document.getElementById("element"), {
+  display: "flex"
 });
 ```
 
@@ -106,10 +118,10 @@ up(element: HTMLElement, options?: object): Promise<boolean>
 down(element: HTMLElement, options?: object): Promise<boolean>
 ```
 
-| Param   | Type     | Description                                  |
-| ------- | -------- | -------------------------------------------- |
-| node    | `Node`   | A single HTML node to be slid open or closed |
-| options | `object` | Options to customize sliding animation.      |
+Param   | Type     | Description
+------- | -------- | --------------------------------------------
+node    | `Node`   | A single HTML node to be slid open or closed
+options | `object` | Options to customize sliding animation.
 
 ## Gotchas
 
@@ -121,6 +133,6 @@ This library strictly animates an element's `height` property. So, targeting an 
 </div>
 ```
 
-## Contributions
+## Show Off Your Use Case
 
-Go for it. Just send a PR.
+I love to see examples of how you're using the stuff I build. If you're comfortable, please [send it my way](http://macarthur.me/contact)!
