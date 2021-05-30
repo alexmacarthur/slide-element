@@ -2,10 +2,13 @@ import { Options } from "./types";
 
 let SlideController = (element: HTMLElement, options: Options) => {
   let eventListenerTypes: string[] = ["transitionend", "transitioncancel"];
+  let openDisplayValue: string = options.display || "block";
 
   let getRawHeight = () => element.clientHeight;
   let getElementStyle = () => element.style;
   let setDisplay = (value: string) => (getElementStyle().display = value);
+
+  delete options.display;
 
   /**
    * Fire a one-time function when an animation has completed.
@@ -84,7 +87,7 @@ let SlideController = (element: HTMLElement, options: Options) => {
   };
 
   let down = async () => {
-    setDisplay("block");
+    setDisplay(openDisplayValue);
 
     await triggerAnimation(true);
 

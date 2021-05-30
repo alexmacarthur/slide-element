@@ -1,4 +1,5 @@
 export type Options = {
-  duration?: number;
-  timingFunction?: string;
+  transitionDuration?: string;
+  transitionTimingFunction?: string;
+  display?: string;
 };

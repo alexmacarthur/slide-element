@@ -66,14 +66,16 @@
       import { toggle } from "./dist/index.modern.js";
 
       document.getElementById('slideThing1').addEventListener('click', (e) => {
-        toggle(document.getElementById('thing1')).then(opened => {
-          console.log(opened);
+        toggle(document.getElementById('thing1'), {
+          display: 'flex'
+        }).then(opened => {
+          console.log("Is open:", opened);
         });
       });
 
       document.getElementById('slideThing2').addEventListener('click', (e) => {
         toggle(document.getElementById('thing2')).then((opened) => {
-          console.log(opened);
+          console.log("Is open:", opened);
         });
       });
     </script>

@@ -49,29 +49,68 @@ it("closes element", (done) => {
   el.ontransitionend(el);
 });
 
-document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-const el = screen.getByTestId("content");
+describe("toggle()", () => {
+  let el;
 
-it("toggles element open", (done) => {
-  jest
-    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
-    .mockImplementation(() => 0);
-
-  toggle(el).then((opened) => {
-    expect(opened).toBe(true);
-
-    done();
+  beforeEach(() => {
+    document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
+    el = screen.getByTestId("content");
   });
 
-  el.ontransitionend(el);
+  it("toggles element open", (done) => {
+    jest
+      .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
+      .mockImplementation(() => 0);
+
+    toggle(el).then((opened) => {
+      expect(opened).toBe(true);
+
+      done();
+    });
+
+    el.ontransitionend(el);
+  });
+
+  it("toggles element closed", (done) => {
+    toggle(el).then((opened) => {
+      expect(opened).toBe(false);
+
+      done();
+    });
+
+    el.ontransitionend();
+  });
 });
 
-it("toggles element closed", (done) => {
-  toggle(el).then((opened) => {
-    expect(opened).toBe(false);
+describe("custom options", () => {
+  let el;
 
-    done();
+  beforeEach(() => {
+    document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
+    el = screen.getByTestId("content");
   });
 
-  el.ontransitionend();
+  it("uses default display value", (done) => {
+    expect(el.style.display).toEqual("none");
+
+    down(el).then(() => {
+      expect(el.style.display).toEqual("block");
+
+      done();
+    });
+
+    el.ontransitionend();
+  });
+
+  it("uses custom display property", (done) => {
+    expect(el.style.display).toEqual("none");
+
+    down(el, { display: "flex" }).then(() => {
+      expect(el.style.display).toEqual("flex");
+
+      done();
+    });
+
+    el.ontransitionend();
+  });
 });
