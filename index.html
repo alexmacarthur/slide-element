@@ -125,12 +125,11 @@ toggle(aBox).then((open) => {
       </a>
     </footer>
 
-    <script src="https://unpkg.com/slide-element@1.0.0/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/slide-element@1.1.0/dist/index.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
     <script>
-
       document.querySelectorAll('[data-code-button]').forEach(button => {
         button.addEventListener('click', e => {
           const example = e.target.dataset.codeButton;
