@@ -1,6 +1,6 @@
 {
   "name": "slide-element",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
@@ -19,18 +19,24 @@
   ],
   "keywords": [
     "jQuery",
+    "slide open",
+    "slide closed",
     "slideToggle",
     "slideUp",
-    "slideDown"
+    "slideDown",
+    "auto height"
   ],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-typescript": "^7.13.0",
-    "@testing-library/dom": "^7.30.4",
-    "jest": "^26.6.3",
-    "microbundle": "^0.13.1",
-    "prettier": "^2.2.1",
-    "serve": "^11.3.2"
+    "@babel/preset-typescript": "^7.14.5",
+    "@testing-library/dom": "^7.31.2",
+    "jest": "^27.0.4",
+    "microbundle": "^0.13.3",
+    "prettier": "^2.3.1",
+    "serve": "^12.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
   }
 }
