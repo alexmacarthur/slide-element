@@ -1,8 +1,13 @@
 # slide-element
 
-A [tiny](https://bundlephobia.com/result?p=slide-element) (~600 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.
+[![Bundle Size](https://badgen.net/bundlephobia/minzip/slide-element)](https://bundlephobia.com/result?p=slide-element)
 
-Check out the **[Demos](https://alexmacarthur.github.io/slide-element/)**.
+A [tiny](https://bundlephobia.com/result?p=slide-element) (~600 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion, regardless of their heights.
+
+To see it in action, check out the following demos:
+
+* [Project Landing Page](https://alexmacarthur.github.io/slide-element/)
+* [CodePen Example](https://codepen.io/alexmacarthur/pen/VwpEgom)
 
 ## Why?
 
