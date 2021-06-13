@@ -11,7 +11,8 @@
     "build": "microbundle -i src/index.ts -o dist/index.js --name SlideElement --no-sourcemap",
     "watch": "npm run build watch",
     "prettify": "prettier src/**/*.{ts,js} --write",
-    "test": "jest src/"
+    "test": "jest src/",
+    "prepare": "husky install"
   },
   "files": [
     "src",
@@ -31,12 +32,17 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.14.5",
     "@testing-library/dom": "^7.31.2",
+    "husky": "^6.0.0",
     "jest": "^27.0.4",
+    "lint-staged": "^11.0.0",
     "microbundle": "^0.13.3",
     "prettier": "^2.3.1",
     "serve": "^12.0.0"
   },
   "jest": {
     "testEnvironment": "jsdom"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "prettier --write"
   }
 }
