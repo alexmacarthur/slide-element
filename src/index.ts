@@ -40,9 +40,9 @@ let SlideController = (element: HTMLElement, options: Options) => {
       options
     );
 
-    Object.entries(animationStyles).forEach(([key, value]) => {
+    for (let [key, value] of Object.entries(animationStyles)) {
       getElementStyle()[key] = forceClear ? "" : value;
-    });
+    }
   };
 
   /**
@@ -104,18 +104,15 @@ let SlideController = (element: HTMLElement, options: Options) => {
 /**
  * Animate an element open.
  */
-export let down = async (
-  element: HTMLElement,
-  options = {}
-): Promise<boolean> => {
-  return await SlideController(element, options).down();
+export let down = (element: HTMLElement, options = {}): Promise<boolean> => {
+  return SlideController(element, options).down();
 };
 
 /**
  * Animate an element closed.
  */
-export let up = async (element, options = {}): Promise<boolean> => {
-  return await SlideController(element, options).up();
+export let up = (element, options = {}): Promise<boolean> => {
+  return SlideController(element, options).up();
 };
 
 /**
