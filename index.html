@@ -67,7 +67,8 @@
 
       document.getElementById('slideThing1').addEventListener('click', (e) => {
         toggle(document.getElementById('thing1'), {
-          display: 'flex'
+          display: 'flex',
+          duration: 200,
         }).then(opened => {
           console.log("Is open:", opened);
         });

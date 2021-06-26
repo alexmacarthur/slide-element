@@ -1,60 +1,66 @@
 import { up, down, toggle } from "./index";
 import { screen } from "@testing-library/dom";
 
+const withMockAnimation = (element) => {
+  const pause = jest.fn();
+  const play = jest.fn();
+  const reverse = jest.fn();
+
+  element.animate = () => {
+    return {
+      pause,
+      play,
+      reverse,
+      animation: Promise.resolve(),
+    };
+  };
+
+  return { element, pause, play, reverse };
+};
+
 beforeEach(() => {
   jest
     .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
     .mockImplementation(() => 100);
 });
 
-it("removes event listeners after finishing", (done) => {
-  document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  const el = screen.getByTestId("content");
-
-  down(el).then(() => {
-    expect(el.ontransitionend).toBeNull();
-    expect(el.ontransitioncancel).toBeNull();
-
-    done();
-  });
-
-  el.ontransitionend(el);
-});
-
 it("opens element", (done) => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  const el = screen.getByTestId("content");
+  const { element, pause, play, reverse } = withMockAnimation(
+    screen.getByTestId("content")
+  );
 
-  down(el).then((opened) => {
+  down(element).then((opened) => {
     expect(opened).toBe(true);
-    expect(el.style.display).toEqual("block");
+    expect(pause).toBeCalledTimes(1);
+    expect(play).toBeCalledTimes(1);
+    expect(reverse).not.toBeCalled();
+    expect(element.style.display).toEqual("block");
 
     done();
   });
-
-  el.ontransitionend(el);
 });
 
 it("closes element", (done) => {
   document.body.innerHTML = `<div data-testid="content">Content!</div>`;
-  const el = screen.getByTestId("content");
+  const { element, pause, play, reverse } = withMockAnimation(
+    screen.getByTestId("content")
+  );
 
-  up(el).then((opened) => {
+  up(element).then((opened) => {
     expect(opened).toBe(false);
-    expect(el.style.display).toEqual("none");
+    expect(pause).toBeCalledTimes(1);
+    expect(play).not.toBeCalled();
+    expect(reverse).toBeCalledTimes(1);
+    expect(element.style.display).toEqual("none");
 
     done();
   });
-
-  el.ontransitionend(el);
 });
 
 describe("toggle()", () => {
-  let el;
-
   beforeEach(() => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-    el = screen.getByTestId("content");
   });
 
   it("toggles element open", (done) => {
@@ -62,55 +68,60 @@ describe("toggle()", () => {
       .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
       .mockImplementation(() => 0);
 
-    toggle(el).then((opened) => {
+    const { element, pause, play, reverse } = withMockAnimation(
+      screen.getByTestId("content")
+    );
+
+    toggle(element).then((opened) => {
       expect(opened).toBe(true);
+      expect(play).toBeCalledTimes(1);
+      expect(pause).toBeCalledTimes(1);
+      expect(reverse).not.toBeCalled();
 
       done();
     });
-
-    el.ontransitionend(el);
   });
 
   it("toggles element closed", (done) => {
-    toggle(el).then((opened) => {
+    const { element, pause, play, reverse } = withMockAnimation(
+      screen.getByTestId("content")
+    );
+
+    toggle(element).then((opened) => {
       expect(opened).toBe(false);
+      expect(play).not.toBeCalled();
+      expect(pause).toBeCalledTimes(1);
+      expect(reverse).toBeCalledTimes(1);
 
       done();
     });
-
-    el.ontransitionend();
   });
 });
 
 describe("custom options", () => {
-  let el;
-
   beforeEach(() => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-    el = screen.getByTestId("content");
   });
 
   it("uses default display value", (done) => {
-    expect(el.style.display).toEqual("none");
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+    expect(element.style.display).toEqual("none");
 
-    down(el).then(() => {
-      expect(el.style.display).toEqual("block");
+    down(element).then(() => {
+      expect(element.style.display).toEqual("block");
 
       done();
     });
-
-    el.ontransitionend();
   });
 
   it("uses custom display property", (done) => {
-    expect(el.style.display).toEqual("none");
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+    expect(element.style.display).toEqual("none");
 
-    down(el, { display: "flex" }).then(() => {
-      expect(el.style.display).toEqual("flex");
+    down(element, { display: "flex" }).then(() => {
+      expect(element.style.display).toEqual("flex");
 
       done();
     });
-
-    el.ontransitionend();
   });
 });

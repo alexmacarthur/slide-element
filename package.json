@@ -1,10 +1,10 @@
 {
   "name": "slide-element",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
-  "types": "dist/types.d.ts",
+  "types": "dist/index.d.ts",
   "homepage": "https://github.com/alexmacarthur/slide-element",
   "scripts": {
     "start": "serve",
@@ -31,12 +31,12 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/preset-typescript": "^7.14.5",
-    "@testing-library/dom": "^7.31.2",
-    "husky": "^6.0.0",
-    "jest": "^27.0.4",
+    "@testing-library/dom": "^8.1.0",
+    "husky": "^7.0.1",
+    "jest": "^27.0.6",
     "lint-staged": "^11.0.0",
     "microbundle": "^0.13.3",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "serve": "^12.0.0"
   },
   "jest": {
