@@ -2,18 +2,18 @@
 
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/slide-element)](https://bundlephobia.com/result?p=slide-element)
 
-A [tiny](https://bundlephobia.com/result?p=slide-element) (~600 bytes gzipped!) Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion, regardless of their heights.
+A [tiny](https://bundlephobia.com/result?p=slide-element) Promise-based, jQuery-reminiscent library for sliding elements with dynamic heights open & closed.
 
 To see it in action, check out the following demos:
 
-* [Project Landing Page](https://alexmacarthur.github.io/slide-element/)
-* [CodePen Example](https://codepen.io/alexmacarthur/pen/VwpEgom)
+- [Project Landing Page](https://alexmacarthur.github.io/slide-element/)
+- [CodePen Example](https://codepen.io/alexmacarthur/pen/VwpEgom)
 
 ## Why?
 
-Using JavaScript to **animate** an element open and closed isn't a straightforward task, especially if it contains dynamic content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
+Using JavaScript to **animate** an element open and closed hasn't traditionally been a straightforward task, especially if it contains dynamically sized content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
 
-This library gets the job done using native CSS transitions, but doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition.
+This library gets the job done using the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API#meet_the_web_animations_api), and it doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition. The animations themselves are powered by the same mechanics underlying CSS transitions, making it one of the best ways to pull it off in terms of performance.
 
 It's small, smooth, and focuses on doing one job well: sliding stuff open and closed.
 
@@ -23,7 +23,7 @@ Run `npm install slide-element`, or use a CDN like [unpkg](https://unpkg.com/sli
 
 ## Setup
 
-Make sure your target element is set to `display: none`.
+Make sure your target element is set to `display: none;`.
 
 ## Usage
 
@@ -46,7 +46,9 @@ Use the `down` function to slide an element open.
 ```javascript
 import { down } from "slide-element";
 
-down(document.getElementById("boxToSlideOpen"));
+document.getElementById("button").addEventListener("click", (e) => {
+  down(document.getElementById("boxToSlideOpen"));
+});
 ```
 
 ### Sliding Elements Up
@@ -56,7 +58,9 @@ Use the `up` function to slide an element closed, and then set its `display` pro
 ```javascript
 import { up } from "slide-element";
 
-up(document.getElementById("boxToSlideClosed"));
+document.getElementById("button").addEventListener("click", (e) => {
+  up(document.getElementById("boxToSlideClosed"));
+});
 ```
 
 ### Everything's a Promise
@@ -66,8 +70,10 @@ Each of the functions provided return promises, so you can easily wait to perfor
 ```typescript
 import { toggle } from "slide-element";
 
-toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
-  console.log("Toggling is done!");
+document.getElementById("button").addEventListener("click", (e) => {
+  toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
+    console.log("Toggling is done!");
+  });
 });
 ```
 
@@ -75,17 +81,17 @@ toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
 
 By default, `slide-element` uses the following transition property values:
 
-Property                 | Value
------------------------- | ------
-transitionDuration       | `.25s`
-transitionTimingFunction | `ease`
+Property                                                                                                 | Value
+-------------------------------------------------------------------------------------------------------- | ------
+duration (in milliseconds)                                                                               | 250
+easing ([choose one](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function#syntax)) | `ease`
 
 You can override these by passing an object as the seceond parameter of any method:
 
 ```javascript
 up(document.getElementById("element"), {
-  transitionDuration: ".5s",
-  transitionTimingFunction: "ease-in-out",
+  duration: 500,
+  easing: "ease-in-out",
 });
 ```
 
@@ -107,7 +113,7 @@ If you'd like to use `slide-element` directly in the browser via CDN, simply loa
 <script src="./path/to/slide-element.js"></script>
 <script>
   document.getElementById('someElement').addEventListener('click', (e) => {
-    SlideElement.toggle(document.getElementById('someBox'));
+    SlideElement.toggle(document.getElementById("someBox"));
 });
 </script>
 ```

@@ -1,100 +1,53 @@
-import { Options } from "./types";
+type Options = KeyframeAnimationOptions & {
+  duration?: number;
+  easing?: string;
+  display?: string;
+};
+
+let defaultOptions = {
+  easing: "ease",
+  duration: 250,
+  fill: "forwards",
+  display: "block",
+};
 
 let SlideController = (element: HTMLElement, options: Options) => {
-  let eventListenerTypes: string[] = ["transitionend", "transitioncancel"];
-  let openDisplayValue: string = options.display || "block";
-
+  let mergedOptions: Options = Object.assign({}, defaultOptions, options);
+  let openDisplayValue = mergedOptions.display as string;
   let getRawHeight = () => element.clientHeight;
   let getElementStyle = () => element.style;
   let setDisplay = (value: string) => (getElementStyle().display = value);
 
-  delete options.display;
-
-  /**
-   * Fire a one-time function when an animation has completed.
-   */
-  let waitForAnimationCompletion = (): Promise<void> => {
-    return new Promise((resolve) => {
-      eventListenerTypes.forEach((listenerType) => {
-        element[`on${listenerType}`] = () => {
-          // Remove all listeners.
-          eventListenerTypes.forEach((type) => (element[`on${type}`] = null));
-
-          resolve();
-        };
-      });
+  let triggerAnimation = async (willOpen: boolean): Promise<void> => {
+    delete mergedOptions.display;
+    let frames: any[] = ["0px", `${getRawHeight()}px`].map((height) => {
+      return { height };
     });
+    let animation = element.animate(frames, mergedOptions);
+
+    animation.pause();
+    animation[willOpen ? "play" : "reverse"]();
+
+    return animation.finished as Promise<any>;
   };
 
-  /**
-   * Set initial CSS required to perform height transition.
-   */
-  let updateTransitionProperties = (forceClear = false): void => {
-    let animationStyles = Object.assign(
-      {
-        height: "",
-        overflow: "hidden",
-        transitionDuration: ".25s",
-        transitionTimingFunction: "ease",
-      },
-      options
-    );
-
-    for (let [key, value] of Object.entries(animationStyles)) {
-      getElementStyle()[key] = forceClear ? "" : value;
-    }
-  };
-
-  /**
-   * Given a bunch of before/after property values, trigger a CSS animation
-   * before & after the next repaint.
-   */
-  let triggerAnimation = (willOpen: boolean): Promise<void> => {
-    return new Promise((resolve) => {
-      updateTransitionProperties();
-
-      let heightValues: string[] = [`${getRawHeight()}px`, "0px"];
-
-      if (willOpen) {
-        heightValues.reverse();
-      }
-
-      let [from, to] = heightValues;
-
-      waitForAnimationCompletion().then(() => {
-        updateTransitionProperties(true);
-
-        resolve();
-      });
-
-      getElementStyle().height = from;
-
-      // This update must happen on a separate tick in order to trigger an animation.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          getElementStyle().height = to;
-        });
-      });
-    });
-  };
-
-  let up = async () => {
+  let up = async (): Promise<boolean> => {
     await triggerAnimation(false);
 
     setDisplay("none");
 
-    return Promise.resolve(false);
+    return false;
   };
 
-  let down = async () => {
+  let down = async (): Promise<boolean> => {
     setDisplay(openDisplayValue);
 
     await triggerAnimation(true);
 
-    return Promise.resolve(true);
+    return true;
   };
 
-  let toggle = () => {
+  let toggle = (): Promise<boolean> => {
     return getRawHeight() ? up() : down();
   };
 
@@ -104,20 +57,29 @@ let SlideController = (element: HTMLElement, options: Options) => {
 /**
  * Animate an element open.
  */
-export let down = (element: HTMLElement, options = {}): Promise<boolean> => {
+export let down = (
+  element: HTMLElement,
+  options: Options = {}
+): Promise<boolean> => {
   return SlideController(element, options).down();
 };
 
 /**
  * Animate an element closed.
  */
-export let up = (element, options = {}): Promise<boolean> => {
+export let up = (
+  element: HTMLElement,
+  options: Options = {}
+): Promise<boolean> => {
   return SlideController(element, options).up();
 };
 
 /**
  * Animate an element open or closed based on its state.
  */
-export let toggle = (element: HTMLElement, options = {}): Promise<boolean> => {
+export let toggle = (
+  element: HTMLElement,
+  options: Options = {}
+): Promise<boolean> => {
   return SlideController(element, options).toggle();
 };
