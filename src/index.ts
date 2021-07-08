@@ -21,7 +21,7 @@ let SlideController = (element: HTMLElement, options: Options) => {
   let triggerAnimation = async (willOpen: boolean): Promise<void> => {
     delete mergedOptions.display;
     let frames: any[] = ["0px", `${getRawHeight()}px`].map((height) => {
-      return { height };
+      return { height, overflow: "hidden" };
     });
     let animation = element.animate(frames, mergedOptions);
 
