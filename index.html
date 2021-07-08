@@ -15,8 +15,8 @@
         <div class="max-w-2xl mx-auto mb-6">
           <h1 class="text-3xl font-semibold mb-1">slide-element</h1>
           <h2 class="text-xl mb-3">
-            A small (~600b gzipped) library for hiding & showing elements in a sliding
-            fashion using native CSS animations.
+            A <a href="https://bundlephobia.com/result?p=slide-element" target="_blank">small</a> (~465 bytes gzipped) library for hiding & showing elements in a sliding
+            fashion using the Web Animations API.
           </h2>
         </div>
       </div>
@@ -127,19 +127,20 @@ toggle(aBox).then((open) => {
       </a>
     </footer>
 
-    <script src="https://unpkg.com/slide-element@1.1.2/dist/index.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
-    <script>
+    <script type="module">
+      import { toggle } from "https://unpkg.com/slide-element@2.0.1/dist/index.modern.js";
+
       document.querySelectorAll('[data-code-button]').forEach(button => {
         button.addEventListener('click', e => {
           const example = e.target.dataset.codeButton;
 
           button.innerHTML = "Sliding...";
 
-          SlideElement.toggle(document.querySelector(`[data-code-block="${example}"]`), {
-            transitionDuration: '.35s'
+          toggle(document.querySelector(`[data-code-block="${example}"]`), {
+            duration: 350
           }).then(open => {
             button.innerHTML = open ? "Hide Code" : "Show Code";
           });

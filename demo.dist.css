@@ -647,6 +647,9 @@ video {
 .font-semibold {
 	font-weight: 600;
 }
+.duration {
+	transition-duration: 150ms;
+}
 
 *:not(code *, pre *) {
     font-family: 'Heebo', sans-serif;
