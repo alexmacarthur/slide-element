@@ -1,24 +1,50 @@
 import { up, down, toggle } from "./index";
 import { screen } from "@testing-library/dom";
 
+const addMockAnimation = (element) => {
+  const mockAnimation = {
+    pause: jest.fn(),
+    cancel: jest.fn(() => {
+      throw "cancel";
+    }),
+  };
+
+  element.getAnimations = () => [mockAnimation];
+
+  return mockAnimation;
+};
+
 const withMockAnimation = (element) => {
   const pause = jest.fn();
   const play = jest.fn();
   const reverse = jest.fn();
 
-  element.animate = () => {
+  element.getAnimations = () => [];
+  element.animate = jest.fn(() => {
     return {
       pause,
       play,
-      reverse,
       animation: Promise.resolve(),
     };
-  };
+  });
 
   return { element, pause, play, reverse };
 };
 
+const mockHeightOnce = (values) => {
+  const mock = jest.spyOn(HTMLDivElement.prototype, "clientHeight", "get");
+
+  return values.reduce((m, val) => m.mockImplementationOnce(() => val), mock);
+};
+
+const mockHeight = (value) => {
+  return jest
+    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
+    .mockImplementation(() => value);
+};
+
 beforeEach(() => {
+  document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
   jest
     .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
     .mockImplementation(() => 100);
@@ -26,33 +52,56 @@ beforeEach(() => {
 
 it("opens element", (done) => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  const { element, pause, play, reverse } = withMockAnimation(
-    screen.getByTestId("content")
-  );
+  const { element, play } = withMockAnimation(screen.getByTestId("content"));
+
+  mockHeightOnce([0, 100, 0]);
 
   down(element).then((opened) => {
     expect(opened).toBe(true);
-    expect(pause).toBeCalledTimes(1);
     expect(play).toBeCalledTimes(1);
-    expect(reverse).not.toBeCalled();
     expect(element.style.display).toEqual("block");
+    expect(window.seCache.get(element)).toEqual("100px");
+
+    expect(element.animate).toHaveBeenCalledWith(
+      [
+        {
+          height: "0px",
+          overflow: "hidden",
+        },
+        {
+          height: "100px",
+          overflow: "hidden",
+        },
+      ],
+      { easing: "ease", duration: 250, fill: "forwards" }
+    );
 
     done();
   });
 });
 
 it("closes element", (done) => {
-  document.body.innerHTML = `<div data-testid="content">Content!</div>`;
-  const { element, pause, play, reverse } = withMockAnimation(
-    screen.getByTestId("content")
-  );
+  document.body.innerHTML = `<div data-testid="content" style="height: 100px">Content!</div>`;
+  const { element, play } = withMockAnimation(screen.getByTestId("content"));
 
   up(element).then((opened) => {
     expect(opened).toBe(false);
-    expect(pause).toBeCalledTimes(1);
-    expect(play).not.toBeCalled();
-    expect(reverse).toBeCalledTimes(1);
+    expect(play).toBeCalledTimes(1);
     expect(element.style.display).toEqual("none");
+    expect(window.seCache.get(element)).toEqual("100px");
+    expect(element.animate).toHaveBeenCalledWith(
+      [
+        {
+          height: "100px",
+          overflow: "hidden",
+        },
+        {
+          height: "0px",
+          overflow: "hidden",
+        },
+      ],
+      { easing: "ease", duration: 250, fill: "forwards" }
+    );
 
     done();
   });
@@ -63,37 +112,84 @@ describe("toggle()", () => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
   });
 
-  it("toggles element open", (done) => {
-    jest
-      .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
-      .mockImplementation(() => 0);
+  describe("animation is allowed to complete fully", () => {
+    it("toggles element open", (done) => {
+      mockHeightOnce([100, 0, 0]);
 
-    const { element, pause, play, reverse } = withMockAnimation(
-      screen.getByTestId("content")
-    );
+      const { element, play } = withMockAnimation(
+        screen.getByTestId("content")
+      );
 
-    toggle(element).then((opened) => {
-      expect(opened).toBe(true);
-      expect(play).toBeCalledTimes(1);
-      expect(pause).toBeCalledTimes(1);
-      expect(reverse).not.toBeCalled();
+      toggle(element).then((opened) => {
+        expect(opened).toBe(true);
+        expect(play).toBeCalledTimes(1);
 
-      done();
+        done();
+      });
+    });
+
+    it("toggles element closed", (done) => {
+      const { element, play } = withMockAnimation(
+        screen.getByTestId("content")
+      );
+
+      mockHeightOnce([100]);
+
+      toggle(element).then((opened) => {
+        expect(opened).toBe(false);
+        expect(play).toBeCalledTimes(1);
+
+        done();
+      });
     });
   });
 
-  it("toggles element closed", (done) => {
-    const { element, pause, play, reverse } = withMockAnimation(
-      screen.getByTestId("content")
-    );
+  describe("animation is rapidly clicked", () => {
+    it("opens down() even though the element is partially expanded due to double click on up()", (done) => {
+      // Visible and with explicit height.
+      document.body.innerHTML = `<div data-testid="content" data-se="0" style="display: block; height="50px;">Content!</div>`;
+      const { element } = withMockAnimation(screen.getByTestId("content"));
+      const { pause, cancel } = addMockAnimation(element);
 
-    toggle(element).then((opened) => {
-      expect(opened).toBe(false);
-      expect(play).not.toBeCalled();
-      expect(pause).toBeCalledTimes(1);
-      expect(reverse).toBeCalledTimes(1);
+      // Will toggle down():
+      toggle(element).then((opened) => {
+        expect(opened).toBe(null);
+        expect(pause).toHaveBeenCalledTimes(1);
+        expect(cancel).toHaveBeenCalledTimes(1);
+        done();
+      });
+    });
 
-      done();
+    it("closes up() even though the element is partially expanded due to double click on down()", (done) => {
+      // Visible and with explicit height.
+      document.body.innerHTML = `<div data-testid="content" data-se="1" style="display: block; height="50px;">Content!</div>`;
+      const { element } = withMockAnimation(screen.getByTestId("content"));
+      const { pause, cancel } = addMockAnimation(element);
+
+      // Will toggle down():
+      toggle(element).then((opened) => {
+        expect(opened).toBe(null);
+        expect(pause).toHaveBeenCalledTimes(1);
+        expect(cancel).toHaveBeenCalledTimes(1);
+
+        done();
+      });
+    });
+
+    it("returns null when another animation was triggered", (done) => {
+      const { element } = withMockAnimation(screen.getByTestId("content"));
+
+      toggle(element).then((opened) => {
+        expect(opened).toBe(false);
+      });
+
+      addMockAnimation(element);
+
+      toggle(element).then((opened) => {
+        expect(opened).toBe(null);
+
+        done();
+      });
     });
   });
 });
@@ -121,6 +217,33 @@ describe("custom options", () => {
     down(element, { display: "flex" }).then(() => {
       expect(element.style.display).toEqual("flex");
 
+      done();
+    });
+  });
+});
+
+describe("height for element has been cached from previous call", () => {
+  it("uses cached height", (done) => {
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+
+    window.seCache = new Map();
+    window.seCache.set(element, "75px");
+
+    const clientHeightSpy = mockHeight(100);
+
+    up(element).then(() => {
+      expect(clientHeightSpy).toHaveBeenCalledTimes(1);
+      done();
+    });
+  });
+
+  it("sets cached height when element is opened", (done) => {
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+
+    mockHeight(85);
+
+    up(element).then(() => {
+      expect(window.seCache.get(element)).toEqual("85px");
       done();
     });
   });
