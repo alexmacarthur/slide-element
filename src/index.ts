@@ -1,3 +1,5 @@
+declare var window: any;
+
 type Options = KeyframeAnimationOptions & {
   duration?: number;
   easing?: string;
@@ -11,44 +13,145 @@ let defaultOptions = {
   display: "block",
 };
 
+let toAllAnimations = (animations: Animation[], cb: Function) => {
+  animations.forEach((a) => cb(a));
+};
+
 let SlideController = (element: HTMLElement, options: Options) => {
-  let mergedOptions: Options = Object.assign({}, defaultOptions, options);
-  let openDisplayValue = mergedOptions.display as string;
+  window.seCache = window.seCache || new Map();
+
   let getRawHeight = () => element.clientHeight;
   let getElementStyle = () => element.style;
   let setDisplay = (value: string) => (getElementStyle().display = value);
+  let setData = (value: string) => (element.dataset.se = value);
+  let pixelate = (value: number): string => `${value}px`;
 
-  let triggerAnimation = async (willOpen: boolean): Promise<void> => {
+  let mergedOptions: Options = Object.assign({}, defaultOptions, options);
+  let openDisplayValue = mergedOptions.display as string;
+  let closedDisplayValue = "none";
+
+  let getCachedHeight = () => window.seCache.get(element);
+  let setCachedHeight = (value: string) => window.seCache.set(element, value);
+
+  let expandedHeight = (() => {
+    // We have the expanded height already cached from before, so use that.
+    if (getCachedHeight()) return getCachedHeight();
+
+    // The element is already visible, so grab the height.
+    if (getRawHeight()) {
+      setCachedHeight(pixelate(getRawHeight()));
+      return getCachedHeight();
+    }
+
+    // There's no height, which means it's invisible.
+    setDisplay(openDisplayValue);
+    setCachedHeight(pixelate(getRawHeight()));
+    setDisplay(closedDisplayValue);
+
+    return getCachedHeight();
+  })();
+
+  let createAnimation = (willOpen: boolean, lowerBound): Animation => {
     delete mergedOptions.display;
-    let frames: any[] = ["0px", `${getRawHeight()}px`].map((height) => {
-      return { height, overflow: "hidden" };
-    });
+
+    let frames = [pixelate(getRawHeight()), pixelate(lowerBound)].map(
+      (height) => ({
+        height,
+        overflow: "hidden",
+      })
+    );
+
+    if (willOpen) {
+      frames[0].height = expandedHeight;
+      frames.reverse();
+    }
+
     let animation = element.animate(frames, mergedOptions);
 
-    animation.pause();
-    animation[willOpen ? "play" : "reverse"]();
+    animation.play();
 
-    return animation.finished as Promise<any>;
+    return animation;
   };
 
-  let up = async (): Promise<boolean> => {
-    await triggerAnimation(false);
-
-    setDisplay("none");
-
-    return false;
+  /**
+   * Find any animations already in progress and finish them. There should
+   * only ever be one active, so it only searchs for the first.
+   */
+  let getExistingAnimations = (): Animation[] => {
+    return element.getAnimations();
   };
 
-  let down = async (): Promise<boolean> => {
-    setDisplay(openDisplayValue);
+  /**
+   * Trigger animation pointed in a particular direction. If one is found
+   * already in progress, this will throw and prevent the Promise from
+   * resolving as if it successfully animated.
+   */
+  let triggerAnimation = async (willOpen: boolean): Promise<boolean | null> => {
+    let existingAnimations = getExistingAnimations();
 
-    await triggerAnimation(true);
+    toAllAnimations(existingAnimations, (a: Animation) => a.pause());
 
-    return true;
+    // If we're opening the element, determine the starting point in case this is
+    // happening in the middle of a previous animation that was aborted. For this reason,
+    // the "lower bound" height will not necessarily be zero.
+    let currentHeight: number = willOpen ? getRawHeight() : 0;
+
+    // Make it visible before we animate it open.
+    if (willOpen) setDisplay(openDisplayValue);
+
+    await createAnimation(willOpen, currentHeight).finished;
+
+    // Hide it after we animate it closed.
+    if (!willOpen) setDisplay(closedDisplayValue);
+
+    toAllAnimations(existingAnimations, (a: Animation) => a.cancel());
+
+    delete element.dataset.se;
+
+    return willOpen;
   };
 
-  let toggle = (): Promise<boolean> => {
-    return getRawHeight() ? up() : down();
+  /**
+   * Attempt to animate the element and return the
+   * directional value. If it fails, return null.
+   */
+  let animateOrNull = async (
+    directionalValue: boolean
+  ): Promise<boolean | null> => {
+    try {
+      return await triggerAnimation(directionalValue);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  /**
+   * Slide the element up/closed.
+   */
+  let up = async (): Promise<boolean | null> => {
+    setData("0");
+
+    return await animateOrNull(false);
+  };
+
+  /**
+   * Slide the element down/open.
+   */
+  let down = async (): Promise<boolean | null> => {
+    setData("1");
+
+    return await animateOrNull(true);
+  };
+
+  /**
+   * Based on the current height of the element, open or close the element.
+   */
+  let toggle = (): Promise<boolean | null> => {
+    let condition = element.dataset.se
+      ? element.dataset.se === "1"
+      : getRawHeight();
+
+    return condition ? up() : down();
   };
 
   return { up, down, toggle };
@@ -60,7 +163,7 @@ let SlideController = (element: HTMLElement, options: Options) => {
 export let down = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean> => {
+): Promise<boolean | null> => {
   return SlideController(element, options).down();
 };
 
@@ -70,7 +173,7 @@ export let down = (
 export let up = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean> => {
+): Promise<boolean | null> => {
   return SlideController(element, options).up();
 };
 
@@ -80,6 +183,6 @@ export let up = (
 export let toggle = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean> => {
+): Promise<boolean | null> => {
   return SlideController(element, options).toggle();
 };

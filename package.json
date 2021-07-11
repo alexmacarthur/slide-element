@@ -40,7 +40,8 @@
     "serve": "^12.0.0"
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "resetMocks": true
   },
   "lint-staged": {
     "*.{js,ts}": "prettier --write"
