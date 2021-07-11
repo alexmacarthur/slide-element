@@ -65,16 +65,40 @@ document.getElementById("button").addEventListener("click", (e) => {
 
 ### Everything's a Promise
 
-Each of the functions provided return promises, so you can easily wait to perform an action after an animation is complete. The resolved value will be a boolean indicating if the element has just been opened (`true`) or closed (`false`).
+Each of the functions provided return promises, so you can easily wait to perform an action after an animation is complete. The resolved value will indicate if the element has just been opened (`true`), closed (`false`), or the result of an animation that interruped another (see more below).
 
 ```typescript
 import { toggle } from "slide-element";
 
 document.getElementById("button").addEventListener("click", (e) => {
-  toggle(document.getElementById("someElement")).then((isOpen: boolean) => {
+  toggle(document.getElementById("someElement")).then((isOpen: boolean | null) => {
     console.log("Toggling is done!");
   });
 });
+```
+
+### Interrupting In-Progress Animations
+
+Depending on your settings, some users may repeatedly trigger an animation before a previous one has been allowed to finish, which will cause the in-progress animation to reverse and move in the opposite direction.
+
+When this occurs, the `isOpen` Promise that resolves after the animation is complete will return `null` for each animation that was triggered in interruption of the first. The initial animation, however will still resolve to the correct value. For example, pretend the following animation is clicked rapidly three times in a row.
+
+```typescript
+import { toggle } from "slide-element";
+
+document.getElementById("button").addEventListener("click", (e) => {
+  toggle(document.getElementById("someElement")).then((isOpen: boolean | null) => {
+    console.log(isOpen);
+  });
+});
+```
+
+When the animation has been allowed to complete, the following values will be logged -- two `null` values for the interrupting animations, and one boolean for the initial (and now complete) one. The point here is that it may be necessary to explicitly check for a non-`null` value when using the resolved "open" state.
+
+```
+true
+null
+null
 ```
 
 ### Customizing the Animation

@@ -45,9 +45,14 @@ const mockHeight = (value) => {
 
 beforeEach(() => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  jest
-    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
-    .mockImplementation(() => 100);
+  mockHeight(100);
+
+  // Does NOT prefer reduced motion.
+  window.matchMedia = () => {
+    return {
+      matches: false,
+    };
+  };
 });
 
 it("opens element", (done) => {
@@ -244,6 +249,27 @@ describe("height for element has been cached from previous call", () => {
 
     up(element).then(() => {
       expect(window.seCache.get(element)).toEqual("85px");
+      done();
+    });
+  });
+});
+
+describe("accessibility settigns", () => {
+  it("disables animation when user prefers reduced motion", (done) => {
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+
+    window.matchMedia = () => {
+      return {
+        matches: true,
+      };
+    };
+
+    up(element).then(() => {
+      expect(element.animate).toHaveBeenCalledWith(expect.anything(), {
+        duration: 0,
+        easing: "ease",
+        fill: "forwards",
+      });
       done();
     });
   });
