@@ -160,6 +160,10 @@ Param   | Type     | Description
 node    | `Node`   | A single HTML node to be slid open or closed
 options | `object` | Options to customize sliding animation.
 
+## Accessibility
+
+This library will respect the `prefers-reduced-motion` setting on a user's machine. When it's set to `reduce`, the sliding animation will be forced to a duration of `0`, making the respective elements open and close instantly.
+
 ## Gotchas
 
 This library strictly animates an element's `height` property. So, targeting an element with `padding` may cause some unexpected weirdness. To prevent this from happening, ensure that the target element itself is void of padding, and instead place it within a nested "wrapper" element. For example:
