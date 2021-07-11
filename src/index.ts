@@ -66,6 +66,11 @@ let SlideController = (element: HTMLElement, options: Options) => {
       frames.reverse();
     }
 
+    // Don't permit an animation if the user doesn't want it.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)")?.matches) {
+      mergedOptions.duration = 0;
+    }
+
     let animation = element.animate(frames, mergedOptions);
 
     animation.play();
