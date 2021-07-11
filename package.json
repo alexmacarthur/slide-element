@@ -1,6 +1,6 @@
 {
   "name": "slide-element",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
   "main": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
