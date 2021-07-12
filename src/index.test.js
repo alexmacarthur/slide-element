@@ -119,7 +119,7 @@ describe("toggle()", () => {
 
   describe("animation is allowed to complete fully", () => {
     it("toggles element open", (done) => {
-      mockHeightOnce([100, 0, 0]);
+      mockHeightOnce([0, 0, 0]);
 
       const { element, play } = withMockAnimation(
         screen.getByTestId("content")
