@@ -1,9 +1,17 @@
+import toEachAnimation from "./utils/toEachAnimation";
+import getRawHeight from "./utils/getRawHeight";
+
 declare var window: any;
 
 type Options = KeyframeAnimationOptions & {
   duration?: number;
   easing?: string;
   display?: string;
+};
+
+type SlideMethods = {
+  up: Function;
+  down: Function;
 };
 
 let defaultOptions = {
@@ -13,18 +21,16 @@ let defaultOptions = {
   display: "block",
 };
 
-let toAllAnimations = (animations: Animation[], cb: Function) => {
-  animations.forEach((a) => cb(a));
-};
-
-let SlideController = (element: HTMLElement, options: Options) => {
+let SlideController = (
+  element: HTMLElement,
+  options: Options
+): SlideMethods => {
   window.seCache = window.seCache || new Map();
 
-  let getRawHeight = () => element.clientHeight;
   let getElementStyle = () => element.style;
   let setDisplay = (value: string) => (getElementStyle().display = value);
   let setData = (value: string) => (element.dataset.se = value);
-  let pixelate = (value: number): string => `${value}px`;
+  let getHeight = (inPixels = false) => getRawHeight(element, inPixels);
 
   let mergedOptions: Options = Object.assign({}, defaultOptions, options);
   let openDisplayValue = mergedOptions.display as string;
@@ -38,14 +44,14 @@ let SlideController = (element: HTMLElement, options: Options) => {
     if (getCachedHeight()) return getCachedHeight();
 
     // The element is already visible, so grab the height.
-    if (getRawHeight()) {
-      setCachedHeight(pixelate(getRawHeight()));
+    if (getHeight()) {
+      setCachedHeight(getHeight(true) as string);
       return getCachedHeight();
     }
 
     // There's no height, which means it's invisible.
     setDisplay(openDisplayValue);
-    setCachedHeight(pixelate(getRawHeight()));
+    setCachedHeight(getHeight(true) as string);
     setDisplay(closedDisplayValue);
 
     return getCachedHeight();
@@ -54,12 +60,10 @@ let SlideController = (element: HTMLElement, options: Options) => {
   let createAnimation = (willOpen: boolean, lowerBound): Animation => {
     delete mergedOptions.display;
 
-    let frames = [pixelate(getRawHeight()), pixelate(lowerBound)].map(
-      (height) => ({
-        height,
-        overflow: "hidden",
-      })
-    );
+    let frames = [getHeight(true), lowerBound].map((height) => ({
+      height,
+      overflow: "hidden",
+    }));
 
     if (willOpen) {
       frames[0].height = expandedHeight;
@@ -94,12 +98,12 @@ let SlideController = (element: HTMLElement, options: Options) => {
   let triggerAnimation = async (willOpen: boolean): Promise<boolean | null> => {
     let existingAnimations = getExistingAnimations();
 
-    toAllAnimations(existingAnimations, (a: Animation) => a.pause());
+    toEachAnimation(existingAnimations, (a: Animation) => a.pause());
 
     // If we're opening the element, determine the starting point in case this is
     // happening in the middle of a previous animation that was aborted. For this reason,
     // the "lower bound" height will not necessarily be zero.
-    let currentHeight: number = willOpen ? getRawHeight() : 0;
+    let currentHeight: string = willOpen ? (getHeight(true) as string) : "0px";
 
     // Make it visible before we animate it open.
     if (willOpen) setDisplay(openDisplayValue);
@@ -109,7 +113,7 @@ let SlideController = (element: HTMLElement, options: Options) => {
     // Hide it after we animate it closed.
     if (!willOpen) setDisplay(closedDisplayValue);
 
-    toAllAnimations(existingAnimations, (a: Animation) => a.cancel());
+    toEachAnimation(existingAnimations, (a: Animation) => a.cancel());
 
     delete element.dataset.se;
 
@@ -148,18 +152,7 @@ let SlideController = (element: HTMLElement, options: Options) => {
     return await animateOrNull(true);
   };
 
-  /**
-   * Based on the current height of the element, open or close the element.
-   */
-  let toggle = (): Promise<boolean | null> => {
-    let condition = element.dataset.se
-      ? element.dataset.se === "1"
-      : getRawHeight();
-
-    return condition ? up() : down();
-  };
-
-  return { up, down, toggle };
+  return { up, down };
 };
 
 /**
@@ -189,5 +182,10 @@ export let toggle = (
   element: HTMLElement,
   options: Options = {}
 ): Promise<boolean | null> => {
-  return SlideController(element, options).toggle();
+  let elData = element.dataset.se;
+  let condition = elData
+    ? elData === "1" // Element is currently opening.
+    : getRawHeight(element);
+
+  return SlideController(element, options)[condition ? "up" : "down"]();
 };
