@@ -1,7 +1,7 @@
 {
   "name": "slide-element",
   "version": "2.1.0",
-  "description": "A Promise-based, jQuery-reminiscent collection of functions to help hide and show elements in a sliding fashion.",
+  "description": "A tiny, accessible, Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.",
   "main": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,8 @@
     "slideToggle",
     "slideUp",
     "slideDown",
-    "auto height"
+    "auto height", 
+    "animate"
   ],
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
