@@ -2,7 +2,7 @@
 
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/slide-element)](https://bundlephobia.com/result?p=slide-element)
 
-A [tiny](https://bundlephobia.com/result?p=slide-element) Promise-based, jQuery-reminiscent library for sliding elements with dynamic heights open & closed.
+A [tiny](https://bundlephobia.com/result?p=slide-element), accessible, Promise-based, jQuery-reminiscent library for sliding elements with dynamic heights open & closed.
 
 To see it in action, check out the following demos:
 
@@ -163,6 +163,8 @@ options | `object` | Options to customize sliding animation.
 ## Accessibility
 
 This library will respect the `prefers-reduced-motion` setting on a user's machine. When it's set to `reduce`, the sliding animation will be forced to a duration of `0`, making the respective elements open and close instantly.
+
+Additionally, `aria-expanded` attribute will be set after an animation is complete. The attribute will _not_ be automatically set on initial page load, however. So, you should set it yourself to match what the initial state of the element will be. 
 
 ## Gotchas
 
