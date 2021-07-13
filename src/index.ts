@@ -110,8 +110,9 @@ let SlideController = (
 
     await createAnimation(willOpen, currentHeight).finished;
 
-    // Hide it after we animate it closed.
     if (!willOpen) setDisplay(closedDisplayValue);
+
+    element.setAttribute("aria-expanded", willOpen as unknown as string);
 
     toEachAnimation(existingAnimations, (a: Animation) => a.cancel());
 
