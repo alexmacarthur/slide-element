@@ -25,7 +25,7 @@ let SlideController = (
   element: HTMLElement,
   options: Options
 ): SlideMethods => {
-  window.seCache = window.seCache || new Map();
+  window.seCache = window.seCache || new WeakMap();
 
   let getElementStyle = () => element.style;
   let setDisplay = (value: string) => (getElementStyle().display = value);
