@@ -7,6 +7,7 @@ type Options = KeyframeAnimationOptions & {
   duration?: number;
   easing?: string;
   display?: string;
+  cache?: string;
 };
 
 type SlideMethods = {
@@ -17,8 +18,9 @@ type SlideMethods = {
 let defaultOptions = {
   easing: "ease",
   duration: 250,
-  fill: "forwards",
+  fill: "backwards",
   display: "block",
+  cache: true,
 };
 
 let SlideController = (
@@ -41,7 +43,8 @@ let SlideController = (
 
   let expandedHeight = (() => {
     // We have the expanded height already cached from before, so use that.
-    if (getCachedHeight()) return getCachedHeight();
+    if (getCachedHeight() && (mergedOptions.cache as string))
+      return getCachedHeight();
 
     // The element is already visible, so grab the height.
     if (getHeight()) {
@@ -62,8 +65,17 @@ let SlideController = (
 
     let frames = [getHeight(true), lowerBound].map((height) => ({
       height,
+      paddingTop: 0,
+      paddingBottom: 0,
       overflow: "hidden",
     }));
+
+    frames[0].paddingTop = window
+      .getComputedStyle(element)
+      .getPropertyValue("padding-top");
+    frames[0].paddingBottom = window
+      .getComputedStyle(element)
+      .getPropertyValue("padding-bottom");
 
     if (willOpen) {
       frames[0].height = expandedHeight;
