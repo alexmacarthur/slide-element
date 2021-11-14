@@ -164,17 +164,7 @@ options | `object` | Options to customize sliding animation.
 
 This library will respect the `prefers-reduced-motion` setting on a user's machine. When it's set to `reduce`, the sliding animation will be forced to a duration of `0`, making the respective elements open and close instantly.
 
-Additionally, `aria-expanded` attribute will be set after an animation is complete. The attribute will _not_ be automatically set on initial page load, however. So, you should set it yourself to match what the initial state of the element will be. 
-
-## Gotchas
-
-This library strictly animates an element's `height` property. So, targeting an element with `padding` may cause some unexpected weirdness. To prevent this from happening, ensure that the target element itself is void of padding, and instead place it within a nested "wrapper" element. For example:
-
-```html
-<div id="myTarget" style="display: none;">
-  <div style="padding: 1rem">My contents!</div>
-</div>
-```
+Additionally, `aria-expanded` attribute will be set after an animation is complete. The attribute will _not_ be automatically set on initial page load, however. So, you should set it yourself to match what the initial state of the element will be.
 
 ## Show Off Your Use Case
 
