@@ -2,17 +2,15 @@
   "name": "slide-element",
   "version": "2.2.1",
   "description": "A tiny, accessible, Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.",
-  "main": "dist/index.modern.js",
-  "unpkg": "dist/index.umd.js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "homepage": "https://github.com/alexmacarthur/slide-element",
   "scripts": {
-    "start": "serve",
-    "build": "microbundle -i src/index.ts -o dist/index.js --name SlideElement --no-sourcemap",
-    "watch": "npm run build watch",
+    "start": "vite serve",
+    "build": "vite build && tsc",
     "prettify": "prettier src/**/*.{ts,js} --write",
-    "test": "jest src/",
-    "prepare": "husky install"
+    "test": "jest src/"
   },
   "files": [
     "src",
@@ -31,14 +29,14 @@
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-typescript": "^7.15.0",
-    "@testing-library/dom": "^8.3.0",
-    "husky": "^7.0.2",
-    "jest": "^27.1.0",
-    "lint-staged": "^11.1.2",
-    "microbundle": "^0.13.3",
-    "prettier": "^2.3.2",
-    "serve": "^12.0.0"
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@testing-library/dom": "^8.11.1",
+    "husky": "^7.0.4",
+    "jest": "^27.3.1",
+    "lint-staged": "^12.0.1",
+    "prettier": "^2.4.1",
+    "vite": "^2.6.14"
   },
   "jest": {
     "testEnvironment": "jsdom",
