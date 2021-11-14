@@ -129,17 +129,16 @@ toggle(aBox).then((open) => {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://unpkg.com/slide-element@2.2.2/dist/index.umd.js"></script>
 
-    <script type="module">
-      import { toggle } from "https://unpkg.com/slide-element@2.1.0/dist/index.modern.js";
-
+    <script>
       document.querySelectorAll('[data-code-button]').forEach(button => {
         button.addEventListener('click', e => {
           const example = e.target.dataset.codeButton;
 
           button.innerHTML = "Sliding...";
 
-          toggle(document.querySelector(`[data-code-block="${example}"]`), {
+          SlideElement.toggle(document.querySelector(`[data-code-block="${example}"]`), {
             duration: 350
           }).then(open => {
             button.innerHTML = open ? "Hide Code" : "Show Code";
