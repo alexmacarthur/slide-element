@@ -69,13 +69,11 @@ it("opens element", (done) => {
       [
         expect.objectContaining({
           height: "0px",
-          overflow: "hidden",
           paddingBottom: "0px",
           paddingTop: "0px",
         }),
         expect.objectContaining({
           height: "100px",
-          overflow: "hidden",
           paddingBottom: "",
           paddingTop: "",
         }),
@@ -99,13 +97,11 @@ it("closes element", (done) => {
       [
         expect.objectContaining({
           height: "100px",
-          overflow: "hidden",
           paddingBottom: "",
           paddingTop: "",
         }),
         expect.objectContaining({
           height: "0px",
-          overflow: "hidden",
           paddingBottom: "0px",
           paddingTop: "0px",
         }),
@@ -231,7 +227,7 @@ describe("custom options", () => {
   });
 });
 
-describe("accessibility settigns", () => {
+describe("accessibility settings", () => {
   it("disables animation when user prefers reduced motion", (done) => {
     const { element } = withMockAnimation(screen.getByTestId("content"));
 
@@ -269,6 +265,30 @@ describe("accessibility settigns", () => {
 
     up(element).then(() => {
       expect(element.getAttribute("aria-expanded")).toEqual("false");
+      done();
+    });
+  });
+});
+
+describe("overflow handling", () => {
+  it("temporarily sets overflow to auto", (done) => {
+    document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+
+    expect(element.style.overflow).toEqual("");
+
+    element.animate = () => {
+      return {
+        play() {},
+        finished: new Promise((resolve) => {
+          expect(element.style.overflow).toEqual("auto");
+          resolve();
+        }),
+      };
+    };
+
+    down(element).then(() => {
+      expect(element.style.overflow).toEqual("");
       done();
     });
   });

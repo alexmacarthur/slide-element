@@ -30,6 +30,8 @@ let SlideController = (
   let setData = (value: string) => (element.dataset.se = value);
   let getHeight = (inPixels = false) => getRawHeight(element, inPixels);
   let getComputed = () => window.getComputedStyle(element);
+  let setOverflow = (set: boolean) =>
+    (element.style.overflow = set ? "auto" : "");
 
   let mergedOptions: Options = Object.assign({}, defaultOptions, options);
   let openDisplayValue = mergedOptions.display as string;
@@ -43,7 +45,6 @@ let SlideController = (
       height,
       paddingTop: "0px",
       paddingBottom: "0px",
-      overflow: "hidden",
     }));
 
     let { paddingTop, paddingBottom } = getComputed();
@@ -88,7 +89,11 @@ let SlideController = (
       // Make it visible before we animate it open.
       if (willOpen) setDisplay(openDisplayValue);
 
+      setOverflow(true);
+
       await createAnimation(willOpen, currentHeight).finished;
+
+      setOverflow(false);
 
       if (!willOpen) setDisplay(closedDisplayValue);
 
