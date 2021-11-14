@@ -13,7 +13,7 @@ To see it in action, check out the following demos:
 
 Using JavaScript to **animate** an element open and closed hasn't traditionally been a straightforward task, especially if it contains dynamically sized content. You could go with something like [jQuery's `slideToggle()`](https://api.jquery.com/slidetoggle/), but that path would require you to take on a lot more code than necessary. Another option is using CSS to change the `max-height` value of an element, but this approach is filled with arbitrariness and difficult to pull off well when you're not sure how much content you'll be animating over.
 
-This library gets the job done using the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API#meet_the_web_animations_api), and it doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are then applied to trigger a smooth, native transition. The animations themselves are powered by the same mechanics underlying CSS transitions, making it one of the best ways to pull it off in terms of performance.
+This library gets the job done using the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API#meet_the_web_animations_api), and it doesn't require elements to have fixed heights. Instead, element heights are calculated based on their contents, and then the appropriate values are applied to trigger a smooth, native transition. The animations themselves are powered by the same mechanics used within CSS transitions, making it one of the best ways to pull it off in terms of performance.
 
 It's small, smooth, and focuses on doing one job well: sliding stuff open and closed.
 
@@ -79,7 +79,7 @@ document.getElementById("button").addEventListener("click", (e) => {
 
 ### Interrupting In-Progress Animations
 
-Depending on your settings, some users may repeatedly trigger an animation before a previous one has been allowed to finish, which will cause the in-progress animation to reverse and move in the opposite direction.
+Depending on your settings, some users may be able to repeatedly trigger a _new_ before a previous one has been allowed to finish, which will cause the in-progress animation instantly finish before the new one can begin.
 
 When this occurs, the `isOpen` Promise that resolves after the animation is complete will return `null` for each animation that was triggered in interruption of the first. The initial animation, however will still resolve to the correct value. For example, pretend the following animation is clicked rapidly three times in a row.
 
@@ -99,6 +99,16 @@ When the animation has been allowed to complete, the following values will be lo
 true
 null
 null
+```
+
+### Animating Boxes with Padding
+
+If the element you're animating has any `padding` set to it, be sure to also apply `box-sizing: border-box` as well. If you don't, the resulting animation will be weird and jumpy.
+
+```html
+<div id="myTarget" style="padding: 1rem; box-sizing: border-box; display: none;">
+  My contents!
+</div>
 ```
 
 ### Customizing the Animation
