@@ -754,10 +754,6 @@ a {
 	font-weight: 600;
 }
 
-[data-code-block] {
-  overflow: auto;
-}
-
 @media (min-width: 768px) {
 
 	.md\:mt-0 {

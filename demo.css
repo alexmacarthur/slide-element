@@ -82,7 +82,3 @@ footer {
 a {
     @apply font-semibold;
 }
-
-[data-code-block] {
-  overflow: auto;
-}
