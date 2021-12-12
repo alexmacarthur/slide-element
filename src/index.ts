@@ -97,8 +97,6 @@ let SlideController = (
 
       if (!willOpen) setDisplay(closedDisplayValue);
 
-      element.setAttribute("aria-expanded", willOpen as unknown as string);
-
       delete element.dataset.se;
     });
 

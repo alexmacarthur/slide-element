@@ -174,8 +174,17 @@ options | `object` | Options to customize sliding animation.
 
 This library will respect the `prefers-reduced-motion` setting on a user's machine. When it's set to `reduce`, the sliding animation will be forced to a duration of `0`, making the respective elements open and close instantly.
 
-Additionally, `aria-expanded` attribute will be set after an animation is complete. The attribute will _not_ be automatically set on initial page load, however. So, you should set it yourself to match what the initial state of the element will be.
+Additionally, it's highly recommended that you toggle the `aria-expanded` attribute on any element (like a button) that's responsible for triggering an animation. This can be done by adding a single line of code that fires afters an animation is complete:
 
+```javascript
+document.getElementById('someButton').addEventListener('click', (e) => {
+    toggle(document.getElementById('thing2')).then((opened) => {
+
+      <!-- Set the appropriate `aria-expanded` value based on the state of the container. -->
+      e.target.setAttribute("aria-expanded", opened);
+    });
+  });
+```
 ## Show Off Your Use Case
 
 I love to see examples of how you're using the stuff I build. If you're comfortable, please [send it my way](http://macarthur.me/contact)!
