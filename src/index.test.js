@@ -246,28 +246,6 @@ describe("accessibility settings", () => {
       done();
     });
   });
-
-  it("sets aria-expanded correctly when open", (done) => {
-    document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-    const { element } = withMockAnimation(screen.getByTestId("content"));
-
-    mockHeightOnce([0, 100, 0]);
-
-    down(element).then(() => {
-      expect(element.getAttribute("aria-expanded")).toEqual("true");
-      done();
-    });
-  });
-
-  it("sets aria-expanded correctly when closed", (done) => {
-    document.body.innerHTML = `<div data-testid="content" style="height: 100px">Content!</div>`;
-    const { element } = withMockAnimation(screen.getByTestId("content"));
-
-    up(element).then(() => {
-      expect(element.getAttribute("aria-expanded")).toEqual("false");
-      done();
-    });
-  });
 });
 
 describe("overflow handling", () => {

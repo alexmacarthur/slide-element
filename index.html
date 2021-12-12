@@ -90,12 +90,14 @@
           duration: 200,
         }).then(opened => {
           console.log("Is open:", opened);
+          e.target.setAttribute("aria-expanded", opened);
         });
       });
 
       document.getElementById('slideThing2').addEventListener('click', (e) => {
         toggle(document.getElementById('thing2')).then((opened) => {
           console.log("Is open:", opened);
+          e.target.setAttribute("aria-expanded", opened);
         });
       });
     </script>
