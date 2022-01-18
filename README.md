@@ -165,10 +165,10 @@ up(element: HTMLElement, options?: object): Promise<boolean>
 down(element: HTMLElement, options?: object): Promise<boolean>
 ```
 
-Param   | Type     | Description
-------- | -------- | --------------------------------------------
-node    | `Node`   | A single HTML node to be slid open or closed
-options | `object` | Options to customize sliding animation.
+Param   | Type          | Description
+------- | ------------- | --------------------------------------------
+element | `HTMLElement` | A single HTML node to be slid open or closed
+options | `object`      | Options to customize sliding animation.
 
 ## Accessibility
 
