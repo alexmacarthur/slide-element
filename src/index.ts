@@ -78,7 +78,7 @@ let SlideController = (
       .getAnimations()
       .map((animation) => animation.finish());
 
-    afterNextRepaint(async () => {
+    await afterNextRepaint(async (resolve) => {
       // If we're opening the element, determine the starting point in case this is
       // happening in the middle of a previous animation that was aborted. For this reason,
       // the "lower bound" height will not necessarily be zero.
@@ -98,6 +98,8 @@ let SlideController = (
       if (!willOpen) setDisplay(closedDisplayValue);
 
       delete element.dataset.se;
+
+      resolve();
     });
 
     return finishedAnimations.length ? null : willOpen;
