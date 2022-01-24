@@ -29,14 +29,14 @@
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-env": "^7.16.4",
-    "@babel/preset-typescript": "^7.16.0",
-    "@testing-library/dom": "^8.11.1",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@testing-library/dom": "^8.11.2",
     "husky": "^7.0.4",
-    "jest": "^27.4.4",
-    "lint-staged": "^12.1.2",
+    "jest": "^27.4.7",
+    "lint-staged": "^12.3.1",
     "prettier": "^2.5.1",
-    "vite": "^2.7.1"
+    "vite": "^2.7.13"
   },
   "jest": {
     "testEnvironment": "jsdom",
