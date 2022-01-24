@@ -11,21 +11,26 @@ const addMockAnimation = (element) => {
   return mockAnimation;
 };
 
-const withMockAnimation = (element) => {
+const withMockAnimation = (element, duration = 0) => {
   const finish = jest.fn();
   const play = jest.fn();
   const reverse = jest.fn();
+  let timeCalled = null;
 
   element.getAnimations = () => [];
   element.animate = jest.fn(() => {
+    timeCalled = new Date().getTime();
+
     return {
+      finished: new Promise((resolve) => {
+        setTimeout(resolve, duration);
+      }),
       finish,
       play,
-      animation: Promise.resolve(),
     };
   });
 
-  return { element, finish, play, reverse };
+  return { element, finish, play, reverse, getTimeCalled: () => timeCalled };
 };
 
 const mockHeightOnce = (values) => {
@@ -267,6 +272,23 @@ describe("overflow handling", () => {
 
     down(element).then(() => {
       expect(element.style.overflow).toEqual("");
+      done();
+    });
+  });
+});
+
+describe("callback timing", () => {
+  it("should fire callback after animation is complete", (done) => {
+    document.body.innerHTML = `<div data-testid="content">Content!</div>`;
+    const { element, getTimeCalled } = withMockAnimation(
+      screen.getByTestId("content"),
+      250
+    );
+
+    up(element).then(() => {
+      const difference = new Date().getTime() - getTimeCalled();
+
+      expect(difference).toBeGreaterThanOrEqual(250);
       done();
     });
   });
