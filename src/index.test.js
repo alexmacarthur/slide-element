@@ -1,9 +1,10 @@
 import { up, down, toggle } from "./index";
 import { screen } from "@testing-library/dom";
 
-const addMockAnimation = (element) => {
+const addMockAnimation = (element, id = "") => {
   const mockAnimation = {
     finish: jest.fn(),
+    id,
   };
 
   element.getAnimations = () => [mockAnimation];
@@ -35,6 +36,12 @@ const mockHeightOnce = (values) => {
   const mock = jest.spyOn(HTMLDivElement.prototype, "clientHeight", "get");
 
   return values.reduce((m, val) => m.mockImplementationOnce(() => val), mock);
+};
+
+const mockOffsetHeight = (height = null) => {
+  jest
+    .spyOn(HTMLDivElement.prototype, "offsetHeight", "get")
+    .mockImplementation(() => height);
 };
 
 const mockHeight = (value) => {
@@ -123,8 +130,6 @@ describe("toggle()", () => {
 
   describe("animation is allowed to complete fully", () => {
     it("toggles element open", (done) => {
-      mockHeightOnce([0, 0, 0]);
-
       const { element } = withMockAnimation(screen.getByTestId("content"));
 
       toggle(element).then((opened) => {
@@ -138,7 +143,8 @@ describe("toggle()", () => {
     it("toggles element closed", (done) => {
       const { element } = withMockAnimation(screen.getByTestId("content"));
 
-      mockHeightOnce([100]);
+      // Give it an arbitrary height to mock it being "open."
+      mockOffsetHeight(100);
 
       toggle(element).then((opened) => {
         expect(opened).toBe(false);
@@ -152,14 +158,15 @@ describe("toggle()", () => {
   describe("animation is rapidly clicked", () => {
     it("opens down() even though the element is partially expanded due to double click on up()", (done) => {
       // Visible and with explicit height.
-      document.body.innerHTML = `<div data-testid="content" data-se="0" style="display: block; height="50px;">Content!</div>`;
+      document.body.innerHTML = `<div data-testid="content" style="display: block; height="50px;">Content!</div>`;
       const { element } = withMockAnimation(screen.getByTestId("content"));
-      const { finish } = addMockAnimation(element);
+      const { finish } = addMockAnimation(element, "0");
 
       // Will toggle down():
       toggle(element).then((opened) => {
         expect(opened).toBe(null);
         expect(finish).toHaveBeenCalledTimes(1);
+        expect(element.style.display).toEqual("block");
 
         done();
       });
@@ -167,30 +174,15 @@ describe("toggle()", () => {
 
     it("closes up() even though the element is partially expanded due to double click on down()", (done) => {
       // Visible and with explicit height.
-      document.body.innerHTML = `<div data-testid="content" data-se="1" style="display: block; height="50px;">Content!</div>`;
+      document.body.innerHTML = `<div data-testid="content" style="display: block; height="50px;">Content!</div>`;
       const { element } = withMockAnimation(screen.getByTestId("content"));
-      const { finish } = addMockAnimation(element);
+      const { finish } = addMockAnimation(element, "1");
 
       // Will toggle down():
       toggle(element).then((opened) => {
         expect(opened).toBe(null);
         expect(finish).toHaveBeenCalledTimes(1);
-
-        done();
-      });
-    });
-
-    it("returns null when another animation was triggered", (done) => {
-      const { element } = withMockAnimation(screen.getByTestId("content"));
-
-      toggle(element).then((opened) => {
-        expect(opened).toBe(false);
-      });
-
-      addMockAnimation(element);
-
-      toggle(element).then((opened) => {
-        expect(opened).toBe(null);
+        expect(element.style.display).toEqual("none");
 
         done();
       });

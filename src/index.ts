@@ -1,4 +1,3 @@
-import getRawHeight from "./utils/getRawHeight";
 import afterNextRepaint from "./utils/afterNextRepaint";
 
 declare var window: any;
@@ -10,8 +9,9 @@ type Options = KeyframeAnimationOptions & {
 };
 
 type SlideMethods = {
-  up: Function;
-  down: Function;
+  up: () => Promise<boolean | null>;
+  down: () => Promise<boolean | null>;
+  toggle: () => Promise<boolean | null>;
 };
 
 let defaultOptions: Partial<Options> = {
@@ -25,13 +25,12 @@ let SlideController = (
   element: HTMLElement,
   options: Partial<Options>
 ): SlideMethods => {
-  let getElementStyle = () => element.style;
-  let setDisplay = (value: string) => (getElementStyle().display = value);
-  let setData = (value: string) => (element.dataset.se = value);
-  let getHeight = (inPixels = false) => getRawHeight(element, inPixels);
+  let setDisplay = (value: string) => (element.style.display = value);
+  let getHeight = () => element.clientHeight + "px";
   let getComputed = () => window.getComputedStyle(element);
   let setOverflow = (set: boolean) =>
     (element.style.overflow = set ? "auto" : "");
+  let getAnimations = () => element.getAnimations();
 
   let mergedOptions: Options = Object.assign({}, defaultOptions, options);
   let openDisplayValue = mergedOptions.display as string;
@@ -40,7 +39,7 @@ let SlideController = (
   let createAnimation = (willOpen: boolean, lowerBound): Animation => {
     delete mergedOptions.display;
 
-    let currentHeight = getHeight(true);
+    let currentHeight = getHeight();
     let frames = [currentHeight, lowerBound].map((height) => ({
       height,
       paddingTop: "0px",
@@ -61,7 +60,12 @@ let SlideController = (
       mergedOptions.duration = 0;
     }
 
-    return element.animate(frames, mergedOptions);
+    let animation = element.animate(frames, mergedOptions);
+
+    // Necessary for handling in-process animations when another is triggered.
+    animation.id = (+willOpen).toString();
+
+    return animation;
   };
 
   /**
@@ -70,17 +74,13 @@ let SlideController = (
    */
   let triggerAnimation = async (willOpen: boolean): Promise<boolean | null> => {
     // Finish any active animations before we trigger a new one.
-    let finishedAnimations = element
-      .getAnimations()
-      .map((animation) => animation.finish());
+    let finishedAnimations = getAnimations().map((a) => a.finish());
 
     await afterNextRepaint(async (resolve) => {
       // If we're opening the element, determine the starting point in case this is
       // happening in the middle of a previous animation that was aborted. For this reason,
       // the "lower bound" height will not necessarily be zero.
-      let currentHeight: string = willOpen
-        ? (getHeight(true) as string)
-        : "0px";
+      let currentHeight: string = willOpen ? (getHeight() as string) : "0px";
 
       // Make it visible before we animate it open.
       if (willOpen) setDisplay(openDisplayValue);
@@ -93,33 +93,28 @@ let SlideController = (
 
       if (!willOpen) setDisplay(closedDisplayValue);
 
-      delete element.dataset.se;
-
       resolve();
     });
 
     return finishedAnimations.length ? null : willOpen;
   };
 
-  /**
-   * Slide the element up/closed.
-   */
-  let up = async (): Promise<boolean | null> => {
-    setData("0");
+  let up = async (): Promise<boolean | null> => triggerAnimation(false);
+  let down = async (): Promise<boolean | null> => triggerAnimation(true);
+  let toggle = async (): Promise<boolean | null> => {
+    let existingAnimationId = getAnimations()[0]?.id;
+    let condition = existingAnimationId
+      ? existingAnimationId === "1" // Element is currently opening.
+      : element.offsetHeight;
 
-    return triggerAnimation(false);
+    return (condition ? up : down)();
   };
 
-  /**
-   * Slide the element down/open.
-   */
-  let down = async (): Promise<boolean | null> => {
-    setData("1");
-
-    return triggerAnimation(true);
+  return {
+    up,
+    down,
+    toggle,
   };
-
-  return { up, down };
 };
 
 /**
@@ -128,9 +123,7 @@ let SlideController = (
 export let down = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean | null> => {
-  return SlideController(element, options).down();
-};
+): Promise<boolean | null> => SlideController(element, options).down();
 
 /**
  * Animate an element closed.
@@ -138,9 +131,7 @@ export let down = (
 export let up = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean | null> => {
-  return SlideController(element, options).up();
-};
+): Promise<boolean | null> => SlideController(element, options).up();
 
 /**
  * Animate an element open or closed based on its state.
@@ -148,11 +139,4 @@ export let up = (
 export let toggle = (
   element: HTMLElement,
   options: Options = {}
-): Promise<boolean | null> => {
-  let elData = element.dataset.se;
-  let condition = elData
-    ? elData === "1" // Element is currently opening.
-    : getRawHeight(element);
-
-  return SlideController(element, options)[condition ? "up" : "down"]();
-};
+): Promise<boolean | null> => SlideController(element, options).toggle();
