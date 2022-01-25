@@ -13,7 +13,6 @@ const addMockAnimation = (element) => {
 
 const withMockAnimation = (element, duration = 0) => {
   const finish = jest.fn();
-  const play = jest.fn();
   const reverse = jest.fn();
   let timeCalled = null;
 
@@ -26,11 +25,10 @@ const withMockAnimation = (element, duration = 0) => {
         setTimeout(resolve, duration);
       }),
       finish,
-      play,
     };
   });
 
-  return { element, finish, play, reverse, getTimeCalled: () => timeCalled };
+  return { element, finish, reverse, getTimeCalled: () => timeCalled };
 };
 
 const mockHeightOnce = (values) => {
@@ -61,13 +59,13 @@ beforeEach(() => {
 
 it("opens element", (done) => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  const { element, play } = withMockAnimation(screen.getByTestId("content"));
+  const { element } = withMockAnimation(screen.getByTestId("content"));
 
   mockHeightOnce([0, 100]);
 
   down(element).then((opened) => {
     expect(opened).toBe(true);
-    expect(play).toBeCalledTimes(1);
+    expect(element.animate).toBeCalledTimes(1);
     expect(element.style.display).toEqual("block");
 
     expect(element.animate).toHaveBeenCalledWith(
@@ -92,11 +90,11 @@ it("opens element", (done) => {
 
 it("closes element", (done) => {
   document.body.innerHTML = `<div data-testid="content" style="height: 100px">Content!</div>`;
-  const { element, play } = withMockAnimation(screen.getByTestId("content"));
+  const { element } = withMockAnimation(screen.getByTestId("content"));
 
   up(element).then((opened) => {
     expect(opened).toBe(false);
-    expect(play).toBeCalledTimes(1);
+    expect(element.animate).toBeCalledTimes(1);
     expect(element.style.display).toEqual("none");
     expect(element.animate).toHaveBeenCalledWith(
       [
@@ -127,28 +125,24 @@ describe("toggle()", () => {
     it("toggles element open", (done) => {
       mockHeightOnce([0, 0, 0]);
 
-      const { element, play } = withMockAnimation(
-        screen.getByTestId("content")
-      );
+      const { element } = withMockAnimation(screen.getByTestId("content"));
 
       toggle(element).then((opened) => {
         expect(opened).toBe(true);
-        expect(play).toBeCalledTimes(1);
+        expect(element.animate).toBeCalledTimes(1);
 
         done();
       });
     });
 
     it("toggles element closed", (done) => {
-      const { element, play } = withMockAnimation(
-        screen.getByTestId("content")
-      );
+      const { element } = withMockAnimation(screen.getByTestId("content"));
 
       mockHeightOnce([100]);
 
       toggle(element).then((opened) => {
         expect(opened).toBe(false);
-        expect(play).toBeCalledTimes(1);
+        expect(element.animate).toBeCalledTimes(1);
 
         done();
       });
@@ -262,7 +256,6 @@ describe("overflow handling", () => {
 
     element.animate = () => {
       return {
-        play() {},
         finished: new Promise((resolve) => {
           expect(element.style.overflow).toEqual("auto");
           resolve();
