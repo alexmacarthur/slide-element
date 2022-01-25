@@ -61,11 +61,7 @@ let SlideController = (
       mergedOptions.duration = 0;
     }
 
-    let animation = element.animate(frames, mergedOptions);
-
-    animation.play();
-
-    return animation;
+    return element.animate(frames, mergedOptions);
   };
 
   /**
