@@ -29,7 +29,7 @@ let SlideController = (
   let getHeight = () => element.clientHeight + "px";
   let getComputed = () => window.getComputedStyle(element);
   let setOverflow = (set: boolean) =>
-    (element.style.overflow = set ? "auto" : "");
+    (element.style.overflow = set ? "hidden" : "");
   let getAnimations = () => element.getAnimations();
 
   let mergedOptions: Options = Object.assign({}, defaultOptions, options);
