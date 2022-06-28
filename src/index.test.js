@@ -240,7 +240,7 @@ describe("accessibility settings", () => {
 });
 
 describe("overflow handling", () => {
-  it("temporarily sets overflow to auto", (done) => {
+  it("temporarily sets overflow to hidden", (done) => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
     const { element } = withMockAnimation(screen.getByTestId("content"));
 
@@ -249,7 +249,7 @@ describe("overflow handling", () => {
     element.animate = () => {
       return {
         finished: new Promise((resolve) => {
-          expect(element.style.overflow).toEqual("auto");
+          expect(element.style.overflow).toEqual("hidden");
           resolve();
         }),
       };
