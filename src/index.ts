@@ -8,25 +8,28 @@ let defaultOptions: Partial<Options> = {
   duration: 250,
   fill: "backwards",
   display: "block",
+  overflow: "hidden",
 };
+
+let nonAnimatableOptions = ["overflow", "display"];
 
 let SlideController = (
   element: HTMLElement,
   options: Partial<Options>
 ): SlideMethods => {
-  let setDisplay = (value: string) => (element.style.display = value);
-  let getHeight = () => element.clientHeight + "px";
-  let getComputed = () => window.getComputedStyle(element);
-  let setOverflow = (set: boolean) =>
-    (element.style.overflow = set ? "hidden" : "");
-  let getAnimations = () => element.getAnimations();
-
   let mergedOptions: Options = Object.assign({}, defaultOptions, options);
   let openDisplayValue = mergedOptions.display as string;
   let closedDisplayValue = "none";
 
+  let setDisplay = (value: string) => (element.style.display = value);
+  let getHeight = () => element.clientHeight + "px";
+  let getComputed = () => window.getComputedStyle(element);
+  let setOverflow = (set: boolean) =>
+    (element.style.overflow = set ? mergedOptions.overflow : "");
+  let getAnimations = () => element.getAnimations();
+
   let createAnimation = (willOpen: boolean, lowerBound): Animation => {
-    delete mergedOptions.display;
+    nonAnimatableOptions.forEach((property) => delete mergedOptions[property]);
 
     let currentHeight = getHeight();
     let frames = [currentHeight, lowerBound].map((height) => ({

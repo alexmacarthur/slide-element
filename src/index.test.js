@@ -216,6 +216,22 @@ describe("custom options", () => {
       done();
     });
   });
+
+  it("uses default overflow property", () => {
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+    expect(element.style.overflow).toEqual("");
+
+    down(element);
+    expect(element.style.overflow).toEqual("hidden");
+  });
+
+  it("uses custom overflow property", () => {
+    const { element } = withMockAnimation(screen.getByTestId("content"));
+    expect(element.style.overflow).toEqual("");
+
+    down(element, { overflow: "visible" });
+    expect(element.style.overflow).toEqual("visible");
+  });
 });
 
 describe("accessibility settings", () => {
