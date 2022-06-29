@@ -138,6 +138,15 @@ down(document.getElementById("element"), {
   display: "flex"
 });
 ```
+### Customizing the `overflow` Value Used During Animation
+
+Out of the box, `slide-element` will animate your element open & closed with `overflow: hidden;`. If you'd like to pass your own value, use the `overflow` option:
+
+```javascript
+down(document.getElementById("element"), {
+  overflow: "auto"
+});
+```
 
 ## Usage w/o a Bundler
 
