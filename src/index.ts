@@ -1,18 +1,7 @@
+import { Options, SlideMethods } from "./types";
 import afterNextRepaint from "./utils/afterNextRepaint";
 
 declare var window: any;
-
-type Options = KeyframeAnimationOptions & {
-  duration?: number;
-  easing?: string;
-  display?: string;
-};
-
-type SlideMethods = {
-  up: () => Promise<boolean | null>;
-  down: () => Promise<boolean | null>;
-  toggle: () => Promise<boolean | null>;
-};
 
 let defaultOptions: Partial<Options> = {
   easing: "ease",
