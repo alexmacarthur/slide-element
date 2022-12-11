@@ -1,6 +1,6 @@
 {
   "name": "slide-element",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A tiny, accessible, Promise-based, jQuery-reminiscent library for hiding and showing elements in a sliding fashion.",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
@@ -9,8 +9,8 @@
   "scripts": {
     "start": "vite serve",
     "build": "vite build && tsc",
-    "prettify": "prettier src/**/*.{ts,js} --write",
-    "test": "jest src/"
+    "prettify": "prettier \"src/**/*.ts\" --write",
+    "test": "vitest src"
   },
   "files": [
     "src",
@@ -29,20 +29,15 @@
   "author": "Alex MacArthur <alex@macarthur.me> (https://macarthur.me)",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-env": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
-    "@testing-library/dom": "^8.14.0",
-    "husky": "^8.0.1",
-    "jest": "^28.1.1",
-    "jest-environment-jsdom": "^28.1.1",
-    "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "typescript": "^4.7.4",
-    "vite": "^2.9.13"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "resetMocks": true
+    "@testing-library/dom": "^8.19.0",
+    "happy-dom": "^8.1.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.1",
+    "terser": "^5.16.1",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.0",
+    "vitest": "^0.25.7"
   },
   "lint-staged": {
     "*.{js,ts}": "prettier --write"
