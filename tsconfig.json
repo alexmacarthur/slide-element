@@ -4,6 +4,7 @@
     "target": "ESNEXT",
     "module": "ESNext",
     "declaration": true,
+    "moduleResolution": "node",
     "emitDeclarationOnly": true,
     "strict": true,
     "noImplicitAny": false,

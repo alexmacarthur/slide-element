@@ -1,9 +1,10 @@
 import { up, down, toggle } from "./index";
 import { screen } from "@testing-library/dom";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 const addMockAnimation = (element, id = "") => {
   const mockAnimation = {
-    finish: jest.fn(),
+    finish: vi.fn(),
     id,
   };
 
@@ -13,12 +14,12 @@ const addMockAnimation = (element, id = "") => {
 };
 
 const withMockAnimation = (element, duration = 0) => {
-  const finish = jest.fn();
-  const reverse = jest.fn();
+  const finish = vi.fn();
+  const reverse = vi.fn();
   let timeCalled = null;
 
   element.getAnimations = () => [];
-  element.animate = jest.fn(() => {
+  element.animate = vi.fn(() => {
     timeCalled = new Date().getTime();
 
     return {
@@ -32,95 +33,92 @@ const withMockAnimation = (element, duration = 0) => {
   return { element, finish, reverse, getTimeCalled: () => timeCalled };
 };
 
-const mockHeightOnce = (values) => {
-  const mock = jest.spyOn(HTMLDivElement.prototype, "clientHeight", "get");
+const mockHeightOnce = (element, values) => {
+  const mock = vi.spyOn(element, "clientHeight", "get");
 
   return values.reduce((m, val) => m.mockImplementationOnce(() => val), mock);
 };
 
-const mockOffsetHeight = (height = null) => {
-  jest
-    .spyOn(HTMLDivElement.prototype, "offsetHeight", "get")
-    .mockImplementation(() => height);
+const mockOffsetHeight = (element, height = null) => {
+  vi.spyOn(element, "offsetHeight", "get").mockImplementation(() => height);
 };
 
-const mockHeight = (value) => {
-  return jest
-    .spyOn(HTMLDivElement.prototype, "clientHeight", "get")
+const mockHeight = (element, value) => {
+  return vi
+    .spyOn(element, "clientHeight", "get")
     .mockImplementation(() => value);
 };
 
 beforeEach(() => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
-  mockHeight(100);
 
-  window.requestAnimationFrame = (cb) => cb();
+  window.requestAnimationFrame = (cb) => {
+    cb(0);
+    return 0;
+  };
 
   // Does NOT prefer reduced motion.
   window.matchMedia = () => {
     return {
       matches: false,
-    };
+    } as MediaQueryList;
   };
 });
 
-it("opens element", (done) => {
+it("opens element", async () => {
   document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
   const { element } = withMockAnimation(screen.getByTestId("content"));
 
-  mockHeightOnce([0, 100]);
+  mockHeightOnce(element, [0, 100]);
 
-  down(element).then((opened) => {
-    expect(opened).toBe(true);
-    expect(element.animate).toBeCalledTimes(1);
-    expect(element.style.display).toEqual("block");
+  const opened = await down(element);
 
-    expect(element.animate).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({
-          height: "0px",
-          paddingBottom: "0px",
-          paddingTop: "0px",
-        }),
-        expect.objectContaining({
-          height: "100px",
-          paddingBottom: "",
-          paddingTop: "",
-        }),
-      ],
-      { easing: "ease", duration: 250, fill: "backwards" }
-    );
+  expect(opened).toBe(true);
+  expect(element.animate).toBeCalledTimes(1);
+  expect(element.style.display).toEqual("block");
 
-    done();
-  });
+  expect(element.animate).toHaveBeenCalledWith(
+    [
+      expect.objectContaining({
+        height: "0px",
+        paddingBottom: "0px",
+        paddingTop: "0px",
+      }),
+      expect.objectContaining({
+        height: "100px",
+        paddingBottom: "",
+        paddingTop: "",
+      }),
+    ],
+    { easing: "ease", duration: 250, fill: "backwards" }
+  );
 });
 
-it("closes element", (done) => {
+it("closes element", async () => {
   document.body.innerHTML = `<div data-testid="content" style="height: 100px">Content!</div>`;
   const { element } = withMockAnimation(screen.getByTestId("content"));
+  mockHeight(element, 100);
 
-  up(element).then((opened) => {
-    expect(opened).toBe(false);
-    expect(element.animate).toBeCalledTimes(1);
-    expect(element.style.display).toEqual("none");
-    expect(element.animate).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({
-          height: "100px",
-          paddingBottom: "",
-          paddingTop: "",
-        }),
-        expect.objectContaining({
-          height: "0px",
-          paddingBottom: "0px",
-          paddingTop: "0px",
-        }),
-      ],
-      { easing: "ease", duration: 250, fill: "backwards" }
-    );
+  const opened = await up(element);
 
-    done();
-  });
+  expect(opened).toBe(false);
+  expect(element.animate).toBeCalledTimes(1);
+  expect(element.style.display).toEqual("none");
+  expect(element.animate).toHaveBeenCalledWith(
+    [
+      expect.objectContaining({
+        height: "100px",
+        paddingBottom: "",
+        paddingTop: "",
+      }),
+      expect.objectContaining({
+        height: "0px",
+        paddingBottom: "0px",
+        paddingTop: "0px",
+      }),
+    ],
+    { easing: "ease", duration: 250, fill: "backwards" }
+  );
 });
 
 describe("toggle()", () => {
@@ -129,63 +127,54 @@ describe("toggle()", () => {
   });
 
   describe("animation is allowed to complete fully", () => {
-    it("toggles element open", (done) => {
+    it("toggles element open", async () => {
       const { element } = withMockAnimation(screen.getByTestId("content"));
 
-      toggle(element).then((opened) => {
-        expect(opened).toBe(true);
-        expect(element.animate).toBeCalledTimes(1);
+      const opened = await toggle(element);
 
-        done();
-      });
+      expect(opened).toBe(true);
+      expect(element.animate).toBeCalledTimes(1);
     });
 
-    it("toggles element closed", (done) => {
+    it("toggles element closed", async () => {
       const { element } = withMockAnimation(screen.getByTestId("content"));
 
       // Give it an arbitrary height to mock it being "open."
-      mockOffsetHeight(100);
+      mockOffsetHeight(element, 100);
 
-      toggle(element).then((opened) => {
-        expect(opened).toBe(false);
-        expect(element.animate).toBeCalledTimes(1);
+      const opened = await toggle(element);
 
-        done();
-      });
+      expect(opened).toBe(false);
+      expect(element.animate).toBeCalledTimes(1);
     });
   });
 
   describe("animation is rapidly clicked", () => {
-    it("opens down() even though the element is partially expanded due to double click on up()", (done) => {
+    it("opens down() even though the element is partially expanded due to double click on up()", async () => {
       // Visible and with explicit height.
       document.body.innerHTML = `<div data-testid="content" style="display: block; height="50px;">Content!</div>`;
       const { element } = withMockAnimation(screen.getByTestId("content"));
       const { finish } = addMockAnimation(element, "0");
 
-      // Will toggle down():
-      toggle(element).then((opened) => {
-        expect(opened).toBe(null);
-        expect(finish).toHaveBeenCalledTimes(1);
-        expect(element.style.display).toEqual("block");
+      const opened = await toggle(element);
 
-        done();
-      });
+      expect(opened).toBe(null);
+      expect(finish).toHaveBeenCalledTimes(1);
+      expect(element.style.display).toEqual("block");
     });
 
-    it("closes up() even though the element is partially expanded due to double click on down()", (done) => {
+    it("closes up() even though the element is partially expanded due to double click on down()", async () => {
       // Visible and with explicit height.
       document.body.innerHTML = `<div data-testid="content" style="display: block; height="50px;">Content!</div>`;
       const { element } = withMockAnimation(screen.getByTestId("content"));
       const { finish } = addMockAnimation(element, "1");
 
-      // Will toggle down():
-      toggle(element).then((opened) => {
-        expect(opened).toBe(null);
-        expect(finish).toHaveBeenCalledTimes(1);
-        expect(element.style.display).toEqual("none");
+      const opened = await toggle(element);
 
-        done();
-      });
+      // Will toggle down():
+      expect(opened).toBe(null);
+      expect(finish).toHaveBeenCalledTimes(1);
+      expect(element.style.display).toEqual("none");
     });
   });
 });
@@ -195,26 +184,22 @@ describe("custom options", () => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
   });
 
-  it("uses default display value", (done) => {
+  it("uses default display value", async () => {
     const { element } = withMockAnimation(screen.getByTestId("content"));
     expect(element.style.display).toEqual("none");
 
-    down(element).then(() => {
-      expect(element.style.display).toEqual("block");
+    await down(element);
 
-      done();
-    });
+    expect(element.style.display).toEqual("block");
   });
 
-  it("uses custom display property", (done) => {
+  it("uses custom display property", async () => {
     const { element } = withMockAnimation(screen.getByTestId("content"));
     expect(element.style.display).toEqual("none");
 
-    down(element, { display: "flex" }).then(() => {
-      expect(element.style.display).toEqual("flex");
+    await down(element, { display: "flex" });
 
-      done();
-    });
+    expect(element.style.display).toEqual("flex");
   });
 
   it("uses default overflow property", () => {
@@ -235,28 +220,27 @@ describe("custom options", () => {
 });
 
 describe("accessibility settings", () => {
-  it("disables animation when user prefers reduced motion", (done) => {
+  it("disables animation when user prefers reduced motion", async () => {
     const { element } = withMockAnimation(screen.getByTestId("content"));
 
     window.matchMedia = () => {
       return {
         matches: true,
-      };
+      } as MediaQueryList;
     };
 
-    up(element).then(() => {
-      expect(element.animate).toHaveBeenCalledWith(expect.anything(), {
-        duration: 0,
-        easing: "ease",
-        fill: "backwards",
-      });
-      done();
+    await up(element);
+
+    expect(element.animate).toHaveBeenCalledWith(expect.anything(), {
+      duration: 0,
+      easing: "ease",
+      fill: "backwards",
     });
   });
 });
 
 describe("overflow handling", () => {
-  it("temporarily sets overflow to hidden", (done) => {
+  it("temporarily sets overflow to hidden", async () => {
     document.body.innerHTML = `<div data-testid="content" style="display: none;">Content!</div>`;
     const { element } = withMockAnimation(screen.getByTestId("content"));
 
@@ -264,33 +248,30 @@ describe("overflow handling", () => {
 
     element.animate = () => {
       return {
-        finished: new Promise((resolve) => {
+        finished: new Promise<void>((resolve) => {
           expect(element.style.overflow).toEqual("hidden");
           resolve();
         }),
       };
     };
 
-    down(element).then(() => {
-      expect(element.style.overflow).toEqual("");
-      done();
-    });
+    await down(element);
+
+    expect(element.style.overflow).toEqual("");
   });
 });
 
 describe("callback timing", () => {
-  it("should fire callback after animation is complete", (done) => {
+  it("should fire callback after animation is complete", async () => {
     document.body.innerHTML = `<div data-testid="content">Content!</div>`;
     const { element, getTimeCalled } = withMockAnimation(
       screen.getByTestId("content"),
       250
     );
 
-    up(element).then(() => {
-      const difference = new Date().getTime() - getTimeCalled();
+    await up(element);
+    const difference = new Date().getTime() - getTimeCalled();
 
-      expect(difference).toBeGreaterThanOrEqual(250);
-      done();
-    });
+    expect(difference).toBeGreaterThanOrEqual(250);
   });
 });
